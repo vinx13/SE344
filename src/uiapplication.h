@@ -24,6 +24,7 @@ private:
     // window size
     const unsigned int kScreenWidth = 800;
     const unsigned int kScreenHeight = 600;
+    const int kOpenGLVersionMajor = 3, kOpenGLVersionMinor = 3;
 
     GLFWwindow *window_;
 

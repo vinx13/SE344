@@ -7,18 +7,38 @@
  */
 
 #include <iostream>
+#include <GL/gl3w.h>
 
 #include "uiapplication.h"
 
 UIApplication::UIApplication() {
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, kOpenGLVersionMajor);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, kOpenGLVersionMinor);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
+
     window_ = glfwCreateWindow(kScreenWidth, kScreenHeight, "SE344 Project", NULL, NULL);
     if (window_ == NULL) {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         exit(-1);
     }
     glfwMakeContextCurrent(window_);
+
+    if (gl3wInit()) {
+        std::cerr << "Failed to init gl3w" << std::endl;
+        exit(-1);
+    }
+
+    if (!gl3wIsSupported(kOpenGLVersionMajor, kOpenGLVersionMajor)) {
+        std::cerr << "OpenGL " << kOpenGLVersionMajor << '.' << kOpenGLVersionMinor << " not supported" << std::endl;
+        exit(-1);
+    }
+
     glfwSetFramebufferSizeCallback(window_, framebuffer_size_callback);
 
 }
