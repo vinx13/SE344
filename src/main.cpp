@@ -12,21 +12,21 @@
 
 #include "uiapplication.h"
 
-static void error_callback(int error, const char* description)
-{
+static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
 
-int main()
-{
-    // glfw: initialize and configure
-    // ------------------------------
+int main(int argc, char **argv) {
     glfwInit();
+
+    std::string modelPath = argc == 2 ? argv[1] : "1.obj";
 
     glfwSetErrorCallback(error_callback);
 
-    UIApplication app;
+    auto &app = UIApplication::getInstance();
+
+    app.init(modelPath);
     app.runLoop();
     app.terminate();
 
