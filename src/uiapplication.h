@@ -28,6 +28,8 @@ public:
 
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+
     void init(const std::string &modelPath);
 
     void runLoop();

@@ -8,6 +8,7 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
+#include <GL/gl3w.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "shader.h"

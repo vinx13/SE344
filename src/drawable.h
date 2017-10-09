@@ -9,7 +9,6 @@
 #define DRAWABLE_H
 
 #include <memory>
-#include <GL/gl3w.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include "program.h"

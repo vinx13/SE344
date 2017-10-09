@@ -59,6 +59,7 @@ void UIApplication::init(const std::string &modelPath) {
     glfwSetFramebufferSizeCallback(window_, framebuffer_size_callback);
     glfwSetCursorPosCallback(window_, mouse_callback);
     glfwSetScrollCallback(window_, scroll_callback);
+    glfwSetMouseButtonCallback(window_, mouse_button_callback);
 
     glBindVertexArray(0);
     auto vert = std::make_unique<Shader>(GL_VERTEX_SHADER, "shader/vert.glsl");
@@ -137,6 +138,8 @@ void UIApplication::processInput() {
         camera_->onKeyboard(Camera::Forward, delta);
     } else if (glfwGetKey(window_, GLFW_KEY_C) == GLFW_PRESS) {
         camera_->onKeyboard(Camera::Backward, delta);
+    } else if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS) {
+
     }
 }
 
@@ -172,4 +175,11 @@ void UIApplication::mouse_callback(GLFWwindow *window, double xpos, double ypos)
 
 void UIApplication::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     instance__.camera_->onMouseScroll(yoffset);
+}
+
+void UIApplication::mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        instance__.object_->bounce();
+        instance__.object2_->bounce();
+    }
 }

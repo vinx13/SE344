@@ -24,6 +24,8 @@ public:
 
     void update(double deltaTime);
 
+    void bounce();
+
 private:
     glm::mat4 model_;
     std::shared_ptr<Drawable> drawable_;

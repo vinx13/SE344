@@ -5,11 +5,12 @@
  * Copyright (c) 2017 Wuwei Lin. All rights reserved.
  *
  */
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
+
 #include "uiobject.h"
 
-#include <utility>
-
-UIObject::UIObject(glm::mat4 model): model_(model), speed_() {
+UIObject::UIObject(glm::mat4 model) : model_(model), speed_() {
 
 }
 
@@ -31,6 +32,10 @@ void UIObject::update(double deltaTime) {
 
     // std::cout << model_[3][1] << std::endl;
     if (model_[3][1] < -1.0) {
-        speed_.y = -0.8 * speed_.y;
+        speed_.y = -0.9 * speed_.y;
     }
+}
+
+void UIObject::bounce() {
+    speed_.y = 3;
 }

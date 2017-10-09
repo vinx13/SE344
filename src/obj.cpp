@@ -73,19 +73,19 @@ std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {
             while (is.peek() != EOF) {
                 nFaces++;
                 is >> vi;
-                drawable->vertexIndices_.push_back(vi);
+                drawable->vertexIndices_.push_back(vi-1);
                 if (is.peek() != '/') continue;
                 is.get();
 
                 if (is.peek() != '/') { // have the second component
                     is >> vti;
-                    drawable->uvIndices_.push_back(vti);
+                    drawable->uvIndices_.push_back(vti-1);
                 }
                 if (is.peek() != '/') continue;
                 is.get();
 
                 is >> vni;
-                drawable->normalIndices_.push_back(vni);
+                drawable->normalIndices_.push_back(vni-1);
             }
             drawable->numVertPerParts_.push_back(nFaces);
             std::cout << nFaces << std::endl;
