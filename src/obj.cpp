@@ -21,8 +21,8 @@ void ObjDrawable::render(const glm::mat4 &model) {
 
     int count = 0;
     for (auto numVert: numVertPerParts_) {
-        glDrawElements(GL_TRIANGLE_STRIP, numVertPerParts_[numVert], GL_UNSIGNED_INT, (GLvoid *) (count));
-        count += numVertPerParts_[numVert];
+        glDrawElements(GL_LINE_LOOP, numVert, GL_UNSIGNED_INT, (GLvoid *) (count));
+        count += numVert;
     }
 }
 
