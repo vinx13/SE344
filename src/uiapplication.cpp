@@ -9,6 +9,7 @@
 #include <GL/gl3w.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <algorithm>
 
 #include "uiapplication.h"
 #include "shader.h"
@@ -52,6 +53,9 @@ void UIApplication::init(const std::string &modelPath) {
         std::cerr << "OpenGL " << kOpenGLVersionMajor << '.' << kOpenGLVersionMinor << " not supported" << std::endl;
         exit(-1);
     }
+
+    initSoundIo();
+
 
     glEnable(GL_DEPTH_TEST);
     //glDepthMask(GL_FALSE);
@@ -102,6 +106,8 @@ void UIApplication::runLoop() {
         // input
         processInput();
 
+        processAudio();
+
         // render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -144,6 +150,10 @@ void UIApplication::processInput() {
 }
 
 void UIApplication::terminate() {
+    soundio_instream_destroy(instream_);
+    soundio_device_unref(device_);
+    soundio_destroy(soundio_);
+
     glfwTerminate();
 }
 
@@ -182,4 +192,197 @@ void UIApplication::mouse_button_callback(GLFWwindow *window, int button, int ac
         instance__.object_->bounce();
         instance__.object2_->bounce();
     }
+}
+
+void UIApplication::initSoundIo() {
+    static int prioritized_sample_rates[] = {
+        48000,
+        44100,
+        96000,
+        24000,
+        0,
+    };
+
+
+    soundio_ = soundio_create();
+    if (!soundio_) {
+        std::cerr << "out of memory" << std::endl;
+        exit(-1);
+    }
+
+    int err = soundio_connect(soundio_);
+
+    if (err) {
+        std::cerr << "error connecting: " << soundio_strerror(err) << std::endl;
+        exit(-1);
+    }
+
+    soundio_flush_events(soundio_);
+
+    int default_in_device_index = soundio_default_input_device_index(soundio_);
+    if (default_in_device_index < 0) {
+        std::cerr << "no output device found" << std::endl;
+        exit(-1);
+    }
+
+    device_ = soundio_get_input_device(soundio_, default_in_device_index);
+    if (!device_) {
+        std::cerr << "out of memory" << std::endl;
+        exit(-1);
+    }
+
+    std::cout << "Output device: " << device_->name << std::endl;
+
+    soundio_device_sort_channel_layouts(device_);
+
+    int sample_rate = 0;
+    int *sample_rate_ptr;
+    for (sample_rate_ptr = prioritized_sample_rates; *sample_rate_ptr; sample_rate_ptr += 1) {
+        if (soundio_device_supports_sample_rate(device_, *sample_rate_ptr)) {
+            sample_rate = *sample_rate_ptr;
+            std::cout << sample_rate << std::endl;
+            break;
+        }
+    }
+    if (!sample_rate)
+        sample_rate = device_->sample_rates[0].max;
+
+    sampleRate_ = sample_rate;
+
+    enum SoundIoFormat fmt = SoundIoFormatFloat32NE;
+
+    if (fmt == SoundIoFormatInvalid)
+        fmt = device_->formats[0];
+
+    instream_ = soundio_instream_create(device_);
+    if (!instream_) {
+        std::cerr << "out of memory" << std::endl;
+        exit(-1);
+    }
+    instream_->format = fmt;
+    instream_->sample_rate = sample_rate;
+    instream_->read_callback = read_callback;
+    instream_->overflow_callback = overflow_callback;
+    instream_->userdata = &rc;
+
+    if ((err = soundio_instream_open(instream_))) {
+        std::cout << "unable to open input stream: " << soundio_strerror(err) << std::endl;
+        exit(-1);
+    }
+
+    std::cout << instream_->layout.name << ' ' << sample_rate << "Hz " << soundio_format_string(fmt) << " interleaved"
+              << std::endl;
+
+
+    const int ring_buffer_duration_seconds = 30;
+    int capacity = ring_buffer_duration_seconds * instream_->sample_rate * instream_->bytes_per_frame;
+    rc.ring_buffer = soundio_ring_buffer_create(soundio_, capacity);
+    if (!rc.ring_buffer) {
+        std::cerr << "out of memory" << std::endl;
+        exit(-1);
+    }
+
+    if ((err = soundio_instream_start(instream_))) {
+        std::cerr << "unable to start input device: %s" << soundio_strerror(err) << std::endl;
+        exit(-1);
+    }
+}
+
+
+void UIApplication::read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max) {
+    RecordContext *rc = (RecordContext *) instream->userdata;
+    struct SoundIoChannelArea *areas;
+    int err;
+
+    char *write_ptr = soundio_ring_buffer_write_ptr(rc->ring_buffer);
+    int free_bytes = soundio_ring_buffer_free_count(rc->ring_buffer);
+    int free_count = free_bytes / instream->bytes_per_frame;
+
+    if (free_count < frame_count_min) {
+        fprintf(stderr, "ring buffer overflow\n");
+        exit(1);
+    }
+
+    int write_frames = std::min(free_count, frame_count_max);
+    int frames_left = write_frames;
+
+    for (;;) {
+        int frame_count = frames_left;
+
+        if ((err = soundio_instream_begin_read(instream, &areas, &frame_count))) {
+            fprintf(stderr, "begin read error: %s", soundio_strerror(err));
+            exit(1);
+        }
+
+        if (!frame_count)
+            break;
+
+        if (!areas) {
+            // Due to an overflow there is a hole. Fill the ring buffer with
+            // silence for the size of the hole.
+            memset(write_ptr, 0, frame_count * instream->bytes_per_frame);
+        } else {
+            for (int frame = 0; frame < frame_count; frame += 1) {
+                for (int ch = 0; ch < instream->layout.channel_count; ch += 1) {
+                    memcpy(write_ptr, areas[ch].ptr, instream->bytes_per_sample);
+                    areas[ch].ptr += areas[ch].step;
+                    write_ptr += instream->bytes_per_sample;
+                }
+            }
+        }
+
+        if ((err = soundio_instream_end_read(instream))) {
+            std::cerr << "end read error: " << soundio_strerror(err) << std::endl;
+            exit(-1);
+        }
+
+        frames_left -= frame_count;
+        if (frames_left <= 0)
+            break;
+    }
+
+    int advance_bytes = write_frames * instream->bytes_per_frame;
+    soundio_ring_buffer_advance_write_ptr(rc->ring_buffer, advance_bytes);
+}
+
+void UIApplication::processAudio() {
+    static int nSamples = 0;
+    static float sum = 0.f;
+    static float threshold = -1;
+    const int WindowSize = sampleRate_ / 2; // 0.5s
+    soundio_flush_events(soundio_);
+    int fill_bytes = soundio_ring_buffer_fill_count(rc.ring_buffer);
+    char *read_buf = soundio_ring_buffer_read_ptr(rc.ring_buffer);
+    soundio_ring_buffer_advance_read_ptr(rc.ring_buffer, fill_bytes);
+
+    int nSamples_ = fill_bytes / sizeof(float);
+    if (!nSamples_) return;
+
+    nSamples += nSamples_;
+    float *samples = (float *) read_buf;
+
+    for (int i = 0; i < nSamples; i++) {
+        sum += std::abs(samples[i]);
+    }
+
+    if (nSamples >= WindowSize) {
+        float ave = sum / nSamples;
+        nSamples = 0;
+        sum = 0.f;
+
+        if (threshold < 0) {
+            threshold = ave;
+        }
+        else if (ave > 10 * threshold) {
+            object_->bounce();
+            object2_->bounce();
+        } else {
+            threshold = (threshold + ave) / 2.f;
+        }
+    }
+}
+
+void UIApplication::overflow_callback(struct SoundIoInStream *instream) {
+    static int count = 0;
+    std::cerr << "overflow " << ++count << std::endl;
 }

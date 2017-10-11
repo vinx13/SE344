@@ -49,8 +49,10 @@ std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {
     std::ifstream src(path);
     std::string line;
     std::string tag;
+
     while (std::getline(src, line)) {
         std::istringstream is(line);
+
         is >> tag;
         if (tag == "v") {
             glm::vec3 vector;
@@ -70,25 +72,32 @@ std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {
             int vi, vti, vni;
 
             int nFaces = 0;
-            while (is.peek() != EOF) {
-                nFaces++;
-                is >> vi;
-                drawable->vertexIndices_.push_back(vi-1);
-                if (is.peek() != '/') continue;
-                is.get();
 
-                if (is.peek() != '/') { // have the second component
-                    is >> vti;
+            std::string faceVertex;
+            std::istringstream faceStream;
+
+            while(is >> faceVertex) {
+                faceStream.str(faceVertex);
+
+                nFaces++;
+                faceStream >> vi;
+                drawable->vertexIndices_.push_back(vi-1);
+                if (faceStream.peek() != '/') continue;
+                faceStream.get();
+
+                if (faceStream.peek() != '/') { // have the second component
+                    faceStream >> vti;
                     drawable->uvIndices_.push_back(vti-1);
                 }
-                if (is.peek() != '/') continue;
-                is.get();
+                if (faceStream.peek() != '/') continue;
+                faceStream.get();
 
-                is >> vni;
+                faceStream >> vni;
                 drawable->normalIndices_.push_back(vni-1);
             }
+
             drawable->numVertPerParts_.push_back(nFaces);
-            std::cout << nFaces << std::endl;
+            //std::cout << nFaces << std::endl;
         }
 
     }

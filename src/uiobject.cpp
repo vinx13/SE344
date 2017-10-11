@@ -24,7 +24,9 @@ void UIObject::render() {
 
 void UIObject::update(double deltaTime) {
     double dx = speed_.x * deltaTime;
-    double dy = speed_.y * deltaTime + 0.5 * kGravityCoff * deltaTime * deltaTime;
+    double a = kGravityCoff + speed_.y * 0.005;
+
+    double dy = speed_.y * deltaTime + 0.5 * a * deltaTime * deltaTime;
     double dz = speed_.z * deltaTime;
     speed_.y += deltaTime * kGravityCoff;
 

@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <GLFW/glfw3.h>
+#include <soundio/soundio.h>
 
 #include "program.h"
 #include "sphere.h"
@@ -56,6 +57,21 @@ private:
 
     double lastTime_, currentTime_;
 
+    SoundIo *soundio_;
+    SoundIoInStream *instream_;
+    SoundIoDevice *device_;
+    int sampleRate_;
+
+    void initSoundIo();
+
+    struct RecordContext {
+        struct SoundIoRingBuffer *ring_buffer;
+    } rc;
+
+    static void read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max);
+    static void overflow_callback(struct SoundIoInStream *instream);
+
+    void processAudio();
 };
 
 
