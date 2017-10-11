@@ -4,3 +4,6 @@
 [submodule "deps/glm"]
 	path = deps/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "deps/libsoundio"]
+	path = deps/libsoundio
+	url = git@github.com:andrewrk/libsoundio.git
