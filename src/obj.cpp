@@ -16,14 +16,11 @@ void ObjDrawable::render(const glm::mat4 &model) {
     //assert(nFaces_ > 0);
     program_->use();
     program_->setMat4("model", model);
+    glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_coords_);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
 
-    int count = 0;
-    for (auto numVert: numVertPerParts_) {
-        glDrawElements(GL_LINE_LOOP, numVert, GL_UNSIGNED_INT, (GLvoid *) (count));
-        count += numVert;
-    }
+    glDrawElements(GL_TRIANGLES, 3 * nFaces, GL_UNSIGNED_SHORT, (GLvoid *) (0));
 }
 
 void ObjDrawable::init() {
@@ -39,7 +36,7 @@ void ObjDrawable::init() {
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices_.size() * sizeof(unsigned int), vertexIndices_.data(),
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices_.size() * sizeof(unsigned short), vertexIndices_.data(),
                  GL_STATIC_DRAW);
 
 }
@@ -49,6 +46,8 @@ std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {
     std::ifstream src(path);
     std::string line;
     std::string tag;
+
+    drawable->nFaces = 0;
 
     while (std::getline(src, line)) {
         std::istringstream is(line);
@@ -71,33 +70,33 @@ std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {
 
             int vi, vti, vni;
 
-            int nFaces = 0;
+            int nVertexes = 0;
 
             std::string faceVertex;
-            std::istringstream faceStream;
 
-            while(is >> faceVertex) {
-                faceStream.str(faceVertex);
+            for (int i = 0; i < 3; i++) {
+                // assume model to be triangle mesh
 
-                nFaces++;
+                is >> faceVertex;
+                std::istringstream faceStream(faceVertex);
+
+                nVertexes++;
                 faceStream >> vi;
-                drawable->vertexIndices_.push_back(vi-1);
+                drawable->vertexIndices_.push_back(vi - 1);
                 if (faceStream.peek() != '/') continue;
                 faceStream.get();
 
                 if (faceStream.peek() != '/') { // have the second component
                     faceStream >> vti;
-                    drawable->uvIndices_.push_back(vti-1);
+                    drawable->uvIndices_.push_back(vti - 1);
                 }
                 if (faceStream.peek() != '/') continue;
                 faceStream.get();
 
                 faceStream >> vni;
-                drawable->normalIndices_.push_back(vni-1);
+                drawable->normalIndices_.push_back(vni - 1);
             }
-
-            drawable->numVertPerParts_.push_back(nFaces);
-            //std::cout << nFaces << std::endl;
+            drawable->nFaces++;
         }
 
     }

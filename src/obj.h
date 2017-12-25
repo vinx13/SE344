@@ -30,8 +30,8 @@ private:
     GLuint vbo_coords_, vao_, ebo_;
     std::vector<glm::vec3> vertices_, normals_;
     std::vector<glm::vec2> textures_;
-    std::vector<int> numVertPerParts_;
-    std::vector<unsigned int> vertexIndices_, uvIndices_, normalIndices_;
+    int nFaces;
+    std::vector<unsigned short> vertexIndices_, uvIndices_, normalIndices_;
 };
 
 class ObjLoader : public Loader {

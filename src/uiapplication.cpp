@@ -53,9 +53,9 @@ void UIApplication::init(const std::string &modelPath) {
         std::cerr << "OpenGL " << kOpenGLVersionMajor << '.' << kOpenGLVersionMinor << " not supported" << std::endl;
         exit(-1);
     }
-
+#if AUDIO_ENABLED
     initSoundIo();
-
+#endif
 
     glEnable(GL_DEPTH_TEST);
     //glDepthMask(GL_FALSE);
@@ -79,8 +79,8 @@ void UIApplication::init(const std::string &modelPath) {
 
     auto scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
     auto translate = glm::vec3(-2, 0, 0);
-    this->object_ = std::make_unique<UIObject>(glm::translate(scale, translate));
-    this->object2_ = std::make_unique<UIObject>(glm::translate(scale, -translate));
+    this->object_ = std::make_unique<UIObject>(glm::translate(scale, -translate));
+    this->object2_ = std::make_unique<UIObject>(glm::translate(glm::scale(glm::mat4(1.f), glm::vec3(0.5f)), translate));
 
     this->loader_ = std::make_unique<ObjLoader>();
 
@@ -105,9 +105,9 @@ void UIApplication::runLoop() {
 
         // input
         processInput();
-
+#if AUDIO_ENABLED
         processAudio();
-
+#endif
         // render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
