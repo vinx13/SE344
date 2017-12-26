@@ -84,7 +84,9 @@ void UIApplication::init(const std::string &modelPath) {
 
     this->loader_ = std::make_unique<ObjLoader>();
 
-    object_->setDrawable(std::static_pointer_cast<Drawable>(std::make_shared<Sphere>(program_)));
+    auto sphere = std::make_shared<Sphere>(program_, false);
+
+    object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
 
     auto drawable = loader_->load(modelPath);
     drawable->setProgram(program_);

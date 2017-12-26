@@ -13,8 +13,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "sphere.h"
 
-Sphere::Sphere(std::shared_ptr<Program> program) : Drawable(std::move(program)), radius_(1.0), nSlices_(30),
-                                                   nStacks_(30) {
+Sphere::Sphere(std::shared_ptr<Program> program, bool wireMode)
+    : Drawable(std::move(program))
+    , radius_(1.0)
+    , nSlices_(30)
+    , nStacks_(30)
+    , wireMode_(wireMode) {
 
     generateSphere();
     generateVertexIndices();
@@ -215,8 +219,4 @@ void Sphere::generateSphere() {
     normals_[idx + 1] = -1.f;
     normals_[idx + 2] = 0.f;
 
-}
-
-void Sphere::setWireMode(bool wireMode) {
-    wireMode_ = wireMode;
 }

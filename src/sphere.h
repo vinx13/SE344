@@ -16,12 +16,9 @@
 
 class Sphere : public Drawable {
 public:
-    Sphere(std::shared_ptr<Program> program);
+    Sphere(std::shared_ptr<Program> program, bool wireMode);
 
     virtual void render(const glm::mat4 &model);
-
-    void setWireMode(bool wireMode);
-
 
 private:
     void generateSphere();
