@@ -30,7 +30,7 @@ Program::~Program() {
 
 void Program::setMat4(const char *name, const glm::mat4 &mat) {
     auto loc = glGetUniformLocation(this->id, name);
-
+    assert(glGetError() == 0);
     glUniformMatrix4fv(loc, 1, false, glm::value_ptr(mat));
 
     assert(glGetError() == 0);

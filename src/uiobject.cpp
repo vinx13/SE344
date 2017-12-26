@@ -10,7 +10,11 @@
 
 #include "uiobject.h"
 
-UIObject::UIObject(glm::mat4 model) : model_(model), speed_() {
+UIObject::UIObject(const glm::mat4 &model): model_(model) {
+
+}
+
+UIMovingObject::UIMovingObject(const glm::mat4 &model) : UIObject(model), speed_() {
 
 }
 
@@ -22,7 +26,7 @@ void UIObject::render() {
     drawable_->render(model_);
 }
 
-void UIObject::update(double deltaTime) {
+void UIMovingObject::update(double deltaTime) {
     double dx = speed_.x * deltaTime;
     double a = kGravityCoff + speed_.y * 0.005;
 
@@ -33,11 +37,11 @@ void UIObject::update(double deltaTime) {
     model_ = glm::translate(model_, glm::vec3(dx, dy, dz));
 
     // std::cout << model_[3][1] << std::endl;
-    if (model_[3][1] < -1.0) {
+    if (model_[3][1] < -5.0) {
         speed_.y = -0.9 * speed_.y;
     }
 }
 
-void UIObject::bounce() {
+void UIMovingObject::bounce() {
     speed_.y = 3;
 }

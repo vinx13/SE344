@@ -15,6 +15,7 @@
 #include "program.h"
 #include "sphere.h"
 #include "camera.h"
+#include "container.h"
 #include "uiobject.h"
 #include "obj.h"
 
@@ -49,9 +50,10 @@ private:
 
     GLFWwindow *window_;
     std::shared_ptr<Program> program_;
-    std::unique_ptr<UIObject> object_, object2_;
+    std::unique_ptr<UIMovingObject> object_, object2_;
     std::unique_ptr<Camera> camera_;
     std::unique_ptr<ObjLoader> loader_;
+    std::unique_ptr<Container> container_;
 
     void processInput();
 

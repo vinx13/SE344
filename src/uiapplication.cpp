@@ -76,11 +76,9 @@ void UIApplication::init(const std::string &modelPath) {
 
     program_->setMat4("projection", projection_);
 
-
-    auto scale = glm::scale(glm::mat4(1.f), glm::vec3(0.1f));
-    auto translate = glm::vec3(-2, 0, 0);
-    this->object_ = std::make_unique<UIObject>(glm::translate(scale, -translate));
-    this->object2_ = std::make_unique<UIObject>(glm::translate(glm::scale(glm::mat4(1.f), glm::vec3(0.5f)), translate));
+    auto translate = glm::vec3(-2.f, 0.f, 0.f);
+    this->object_ = std::make_unique<UIMovingObject>(glm::translate(glm::mat4(1.f), -translate));
+    this->object2_ = std::make_unique<UIMovingObject>(glm::translate(glm::mat4(1.f), translate));
 
     this->loader_ = std::make_unique<ObjLoader>();
 
@@ -92,10 +90,15 @@ void UIApplication::init(const std::string &modelPath) {
     drawable->setProgram(program_);
     object2_->setDrawable(drawable);
 
+    container_ = std::make_unique<Container>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
+    drawable = std::make_shared<ContainerDrawable>(program_);
+    container_->setDrawable(drawable);
+
     // position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.f, float pitch = 0
-    this->camera_ = std::make_unique<Camera>(-1.f, 1.f, 1.f,
-                                             0.f, 1.f, 0.f,
-                                             -45.f, -45.f);
+//    this->camera_ = std::make_unique<Camera>(-20.f, 20.f, 5.f,
+//                                             0.f, 1.f, 0.f,
+//                                             -45.f, -45.f);
+    this->camera_ = std::make_unique<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, -1.f, -90.f, -45.f);
 }
 
 void UIApplication::runLoop() {
@@ -121,6 +124,7 @@ void UIApplication::runLoop() {
 
         object_->render();
         object2_->render();
+        container_->render();
 
         lastTime_ = currentTime_;
 

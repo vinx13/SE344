@@ -16,7 +16,7 @@ class Camera
 {
 public:
     const float kMouseSensitivity = 0.1;
-    const float kSpeed = 0.1;
+    const float kSpeed = 6.5f;
 
     enum kCameraMovement { Forward, Backward, Left, Right, Up, Down, ZoomIn, ZoomOut };
     // Camera Attributes

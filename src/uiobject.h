@@ -15,20 +15,28 @@
 
 class UIObject {
 public:
-
-    UIObject(glm::mat4 model = glm::scale(glm::mat4(1.f), glm::vec3(0.1f)));
+    UIObject() = default;
+    UIObject(const glm::mat4 &model);
 
     void setDrawable(std::shared_ptr<Drawable> drawable);
 
-    void render();
+    virtual void render();
+
+    virtual ~UIObject() {}
+protected:
+    std::shared_ptr<Drawable> drawable_;
+    glm::mat4 model_;
+};
+
+class UIMovingObject: public UIObject {
+public:
+    UIMovingObject(const glm::mat4 &model);
 
     void update(double deltaTime);
 
     void bounce();
 
 private:
-    glm::mat4 model_;
-    std::shared_ptr<Drawable> drawable_;
     Speed speed_;
 };
 
