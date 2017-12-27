@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 #include <GL/gl3w.h>
 
@@ -20,10 +21,11 @@ public:
     unsigned int id;
     GLenum type;
 
-    Shader(GLenum type, const std::string &source);
+    Shader(GLenum type, const std::string &sourceFile);
+    Shader(GLenum type, const std::vector<std::string> &sourceFiles);
 
 private:
-    std::string readShaderFile(const std::string &source);
+    std::vector<std::string> readShaderFile(const std::vector<std::string> &files);
 
     void checkCompileErrors();
 };

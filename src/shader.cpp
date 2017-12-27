@@ -8,39 +8,50 @@
 #include "shader.h"
 
 
-Shader::Shader(GLenum type, const std::string &source) {
+Shader::Shader(GLenum type, const std::string &sourceFile) : Shader(type, std::vector<std::string>{sourceFile}) {
+
+}
+
+Shader::Shader(GLenum type, const std::vector<std::string> &sourceFiles) {
     this->id = glCreateShader(type);
     this->type = type;
 
-    const std::string &sourceCode = readShaderFile(source);
-    const char *shaderSource = sourceCode.c_str();
+    const auto &sourceCodes = readShaderFile(sourceFiles);
+    std::vector<const char *>shaderSources;
+    for (const auto &source: sourceCodes) {
+        shaderSources.push_back(source.c_str());
+    }
 
-    glShaderSource(this->id, 1, &shaderSource, NULL);
+    glShaderSource(this->id, shaderSources.size(), shaderSources.data(), NULL);
 
     glCompileShader(this->id);
 
     checkCompileErrors();
 }
 
-std::string Shader::readShaderFile(const std::string &source) {
-    std::string source_code;
+std::vector<std::string> Shader::readShaderFile(const std::vector<std::string> &files) {
+    std::vector<std::string> sources;
     std::ifstream shader_file;
 
     // ensure ifstream objects can throw exceptions
     shader_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-    try {
-        shader_file.open(source);
-        std::stringstream shaderStream;
-        shaderStream << shader_file.rdbuf();
-        shader_file.close();
-        source_code = shaderStream.str();
-    }
-    catch (std::ifstream::failure e) {
-        std::cerr << "Failed to read shader file " << source << std::endl;
+    for (const auto &file : files) {
+        try {
+            std::string source_code;
+            shader_file.open(file);
+            std::stringstream shaderStream;
+            shaderStream << shader_file.rdbuf();
+            shader_file.close();
+            source_code = shaderStream.str();
+            sources.push_back(std::move(source_code));
+        }
+        catch (const std::ifstream::failure &e) {
+            std::cerr << "Failed to read shader file " << file << std::endl;
+        }
     }
 
-    return source_code;
+    return sources;
 }
 
 void Shader::checkCompileErrors() {
