@@ -10,11 +10,33 @@ add_subdirectory(deps/gl3w)
 add_subdirectory(deps/glm)
 add_subdirectory(deps/libsoundio)
 find_package(glm REQUIRED)
+
 file(GLOB SOURCE_FILES src/*.cpp src/*.h)
+file(GLOB SHADER_FILES src/shader/*)
 
 include_directories(${glfw_INCLUDE_DIRS} ${libsoundio_SOURCE_DIR} deps/glm)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} gl3w glfw libsoundio_shared ${LIBSOUNDIO_LIBS} ${LIBM} ${OPENGL_LIBRARIES})
 
-file(COPY src/shader DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+#add_custom_target(copy_shader ALL
+#        COMMAND cmake -E copy_directory src/shader ${CMAKE_BINARY_DIR}/shader)
+#add_dependencies(${PROJECT_NAME} copy_shader)
+
+# Scan through resource folder for updated files and copy if none existing or changed
+foreach(shader_file ${SHADER_FILES})
+    get_filename_component(filename ${shader_file} NAME)
+
+    set(output "${CMAKE_CURRENT_BINARY_DIR}/shader/${filename}")
+
+    add_custom_command(
+            COMMENT "Moving updated shader-file '${filename}'"
+            OUTPUT ${output}
+            DEPENDS ${shader_file}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${shader_file}
+            ${output}
+    )
+    add_custom_target(${filename} ALL DEPENDS ${shader_file} ${output})
+    add_dependencies(${PROJECT_NAME} ${filename})
+endforeach()
