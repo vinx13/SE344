@@ -13,12 +13,19 @@
 #include <sys/termios.h>
 #include "drawable.h"
 #include "speed.h"
+#include "mesh.h"
 
-class Sphere : public Drawable {
+class SphereMesh : public Mesh {
 public:
-    Sphere(std::shared_ptr<Program> program, bool wireMode);
+    SphereMesh(int nSlices = 15, int nSlacks = 15, double radius = 1.0, bool wireMode = false);
 
-    virtual void render(const glm::mat4 &model);
+    virtual void render(Program &program) override;
+
+    void enableInstance();
+
+    void renderInstanced(Program &program, const glm::vec3 *offsets, int n);
+
+    void bind() override;
 
 private:
     void generateSphere();
@@ -29,19 +36,33 @@ private:
 
     void generateWireVertexIndices();
 
-
     GLuint vbo_coords_, vao_, ebo_;
     std::vector<float> vertices_, normals_;
     std::vector<short> vertexIndices_;
     std::vector<short> sliceIndices_;
     std::vector<short> stackIndices_;
 
-    bool wireMode_ = true;
-    int nVert_;
 
+    bool wireMode_;
+    int nVert_;
     int nStacks_, nSlices_;
     float radius_;
+    GLuint offset_buffer_;
+};
 
+class Camera;
+
+class Sphere {
+public:
+    void render();
+
+    Sphere(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Program> &program,
+           const std::shared_ptr<Mesh> &mesh);
+
+private:
+    std::shared_ptr<Camera> camera_;
+    std::shared_ptr<Program> program_;
+    std::shared_ptr<Mesh> mesh_;
 };
 
 

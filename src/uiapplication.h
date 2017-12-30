@@ -15,7 +15,7 @@
 #include "program.h"
 #include "sphere.h"
 #include "camera.h"
-#include "container.h"
+#include "pool.h"
 #include "uiobject.h"
 #include "obj.h"
 
@@ -38,6 +38,11 @@ public:
 
     void terminate();
 
+    glm::mat4 getViewMatrix() const;
+    glm::mat4 getProjectionMatrix() const;
+
+    const std::shared_ptr<Camera> &getCamera() const;
+
 private:
     static UIApplication instance__;
 
@@ -51,9 +56,9 @@ private:
     GLFWwindow *window_;
     std::shared_ptr<Program> program_;
     std::unique_ptr<UIMovingObject> object_, object2_;
-    std::unique_ptr<Camera> camera_;
+    std::shared_ptr<Camera> camera_;
     std::unique_ptr<ObjLoader> loader_;
-    std::unique_ptr<Container> container_;
+    std::unique_ptr<Pool> pool_;
 
     void processInput();
 

@@ -9,8 +9,9 @@
 #include <GLFW/glfw3.h>
 
 #include "uiobject.h"
+#include "uiapplication.h"
 
-UIObject::UIObject(const glm::mat4 &model): model_(model) {
+UIObject::UIObject(const glm::mat4 &model) : model_(model) {
 
 }
 
@@ -23,7 +24,8 @@ void UIObject::setDrawable(std::shared_ptr<Drawable> drawable) {
 }
 
 void UIObject::render() {
-    drawable_->render(model_);
+    drawable_->render(
+        UIApplication::getInstance().getProjectionMatrix() * UIApplication::getInstance().getViewMatrix() * model_);
 }
 
 void UIMovingObject::update(double deltaTime) {

@@ -54,7 +54,7 @@ void UIApplication::init(const std::string &modelPath) {
         exit(-1);
     }
 #if AUDIO_ENABLED
-    initSoundIo();
+        initSoundIo();
 #endif
 
     glEnable(GL_DEPTH_TEST);
@@ -72,9 +72,8 @@ void UIApplication::init(const std::string &modelPath) {
     program_->link();
     program_->use();
     //
-    auto projection_ = glm::perspective(glm::radians(45.0f), 1.33f, 0.1f, 100.0f);
 
-    program_->setMat4("projection", projection_);
+    //program_->setMat4("projection", getProjectionMatrix());
 
     auto translate = glm::vec3(-2.f, 0.f, 0.f);
     this->object_ = std::make_unique<UIMovingObject>(glm::translate(glm::mat4(1.f), -translate));
@@ -82,23 +81,26 @@ void UIApplication::init(const std::string &modelPath) {
 
     this->loader_ = std::make_unique<ObjLoader>();
 
-    auto sphere = std::make_shared<Sphere>(program_, false);
+    //auto sphere = std::make_shared<Sphere>(program_, false);
 
-    object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
+   // object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
 
     auto drawable = loader_->load(modelPath);
     drawable->setProgram(program_);
     object2_->setDrawable(drawable);
 
-    container_ = std::make_unique<Container>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
+    pool_ = std::make_unique<Pool>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
     drawable = std::make_shared<ContainerDrawable>(program_);
-    container_->setDrawable(drawable);
+    pool_->setDrawable(drawable);
 
     // position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.f, float pitch = 0
 //    this->camera_ = std::make_unique<Camera>(-20.f, 20.f, 5.f,
 //                                             0.f, 1.f, 0.f,
 //                                             -45.f, -45.f);
-    this->camera_ = std::make_unique<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, -1.f, -90.f, -45.f);
+    this->camera_ = std::make_shared<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, -1.f, -90.f, -45.f);
+    //glEnable(GL_POINT_SMOOTH);
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void UIApplication::runLoop() {
@@ -116,15 +118,16 @@ void UIApplication::runLoop() {
         // render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        program_->use();
+        //program_->setMat4("view", camera_->genViewMatrix());
 
-        program_->setMat4("view", camera_->genViewMatrix());
-
-        object_->update(delta);
+        //object_->update(delta);
         object2_->update(delta);
+        pool_->update(delta);
 
-        object_->render();
+        //object_->render();
         object2_->render();
-        container_->render();
+        pool_->render();
 
         lastTime_ = currentTime_;
 
@@ -378,8 +381,7 @@ void UIApplication::processAudio() {
 
         if (threshold < 0) {
             threshold = ave;
-        }
-        else if (ave > 10 * threshold) {
+        } else if (ave > 10 * threshold) {
             object_->bounce();
             object2_->bounce();
         } else {
@@ -391,4 +393,17 @@ void UIApplication::processAudio() {
 void UIApplication::overflow_callback(struct SoundIoInStream *instream) {
     static int count = 0;
     std::cerr << "overflow " << ++count << std::endl;
+}
+
+glm::mat4 UIApplication::getViewMatrix() const {
+    return camera_->genViewMatrix();
+}
+
+glm::mat4 UIApplication::getProjectionMatrix() const {
+    return glm::perspective(glm::radians(60.0f), 1.33f, 0.1f, 100.0f);
+
+}
+
+const std::shared_ptr<Camera> &UIApplication::getCamera() const {
+    return camera_;
 }

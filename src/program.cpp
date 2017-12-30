@@ -94,6 +94,7 @@ void Program::check(GLenum what_to_check) {
 
 void Program::use() {
     glUseProgram(this->id);
+    assert(glGetError() == 0);
 }
 
 void Program::stopUsing() {

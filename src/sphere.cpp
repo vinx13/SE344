@@ -13,13 +13,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "sphere.h"
 
-Sphere::Sphere(std::shared_ptr<Program> program, bool wireMode)
-    : Drawable(std::move(program))
-    , radius_(1.0)
-    , nSlices_(30)
-    , nStacks_(30)
-    , wireMode_(wireMode) {
-
+SphereMesh::SphereMesh(int nSlices, int nStacks, double radius, bool wireMode)
+    : nSlices_(nSlices), nStacks_(nStacks), radius_(radius), wireMode_(wireMode) {
     generateSphere();
     generateVertexIndices();
 
@@ -37,52 +32,27 @@ Sphere::Sphere(std::shared_ptr<Program> program, bool wireMode)
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices_.size() * sizeof(short), vertexIndices_.data(), GL_STATIC_DRAW);
-
 }
 
-void Sphere::render(const glm::mat4 &model) {
-
-    program_->use();
-    program_->setMat4("model", model);
-
-    glBindVertexArray(vao_);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_coords_);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-
-    if (wireMode_) {
-        int numParts = nStacks_ - 1;
-        int numVertIdxsPerPart = nSlices_ + 1;
-        for (int i = 0; i < numParts; i++) {
-            glDrawElements(GL_LINE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
-                           (GLvoid *) (sizeof(GLushort) * i * numVertIdxsPerPart));
-        }
-        int offset = numParts * numVertIdxsPerPart;
-        numParts = nSlices_;
-        numVertIdxsPerPart = nStacks_ + 1;
-        for (int i = 0; i < numParts; i++) {
-            glDrawElements(GL_LINE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
-                           (GLvoid *) (sizeof(GLushort) * (i * numVertIdxsPerPart + offset)));
-        }
-
-    } else {
-        int numParts = nStacks_, numVertIdxsPerPart = (nSlices_ + 1) * 2;
-
-        for (int i = 0; i < numParts; i++) {
-            glDrawElements(GL_TRIANGLE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
-                           (GLvoid *) (sizeof(GLushort) * i * numVertIdxsPerPart));
-        }
-    }
-
+void SphereMesh::enableInstance() {
+    bind();
+    glGenBuffers(1, &offset_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, offset_buffer_);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *) 0);
+    glVertexAttribDivisor(0, 0);
+    glVertexAttribDivisor(1, 1);
+    assert(glGetError() == 0);
 }
 
-void Sphere::generateVertexIndices() {
+void SphereMesh::generateVertexIndices() {
     if (wireMode_)
         generateWireVertexIndices();
     else
         generateSolidVertexIndices();
 }
 
-void Sphere::generateWireVertexIndices() {
+void SphereMesh::generateWireVertexIndices() {
     int i, j, idx;
 
     vertexIndices_.clear();
@@ -109,7 +79,7 @@ void Sphere::generateWireVertexIndices() {
 
 }
 
-void Sphere::generateSolidVertexIndices() {
+void SphereMesh::generateSolidVertexIndices() {
 
     std::vector<int> stackIndex, sliceIndex;
 
@@ -161,7 +131,7 @@ void Sphere::generateSolidVertexIndices() {
     vertexIndices_.push_back(offset);
 }
 
-void Sphere::generateSphere() {
+void SphereMesh::generateSphere() {
     int idx = 0;    /* idx into vertex/normal buffer */
     GLfloat x, y, z;
 
@@ -218,5 +188,82 @@ void Sphere::generateSphere() {
     normals_[idx] = 0.f;
     normals_[idx + 1] = -1.f;
     normals_[idx + 2] = 0.f;
+
+}
+
+void SphereMesh::bind() {
+    glBindVertexArray(vao_);
+}
+
+void SphereMesh::render(Program &program) {
+    assert(glGetError() == 0);
+    program.use();
+
+    bind();
+    if (wireMode_) {
+        int numParts = nStacks_ - 1;
+        int numVertIdxsPerPart = nSlices_ + 1;
+        for (int i = 0; i < numParts; i++) {
+            glDrawElements(GL_LINE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
+                           (GLvoid *) (sizeof(GLushort) * i * numVertIdxsPerPart));
+        }
+        int offset = numParts * numVertIdxsPerPart;
+        numParts = nSlices_;
+        numVertIdxsPerPart = nStacks_ + 1;
+        for (int i = 0; i < numParts; i++) {
+            glDrawElements(GL_LINE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
+                           (GLvoid *) (sizeof(GLushort) * (i * numVertIdxsPerPart + offset)));
+        }
+    } else {
+        int numParts = nStacks_, numVertIdxsPerPart = (nSlices_ + 1) * 2;
+
+        for (int i = 0; i < numParts; i++) {
+            glDrawElements(GL_TRIANGLE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
+                           (GLvoid *) (sizeof(GLushort) * i * numVertIdxsPerPart));
+        }
+    }
+
+    assert(glGetError() == 0);
+}
+
+
+void SphereMesh::renderInstanced(Program &program, const glm::vec3 *offsets, int n) {
+    assert(glGetError() == 0);
+    program.use();
+
+    bind();
+    glBindBuffer(GL_ARRAY_BUFFER, offset_buffer_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * n, offsets, GL_STREAM_DRAW);
+
+    if (wireMode_) {
+        int numParts = nStacks_ - 1;
+        int numVertIdxsPerPart = nSlices_ + 1;
+
+        for (int i = 0; i < numParts; i++) {
+            glDrawElementsInstanced(GL_LINE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
+                                    (GLvoid *) (sizeof(GLushort) * i * numVertIdxsPerPart), n);
+        }
+        int offset = numParts * numVertIdxsPerPart;
+        numParts = nSlices_;
+        numVertIdxsPerPart = nStacks_ + 1;
+        for (int i = 0; i < numParts; i++) {
+            glDrawElementsInstanced(GL_LINE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
+                                    (GLvoid *) (sizeof(GLushort) * (i * numVertIdxsPerPart + offset)), n);
+        }
+    } else {
+        int numParts = nStacks_, numVertIdxsPerPart = (nSlices_ + 1) * 2;
+
+        for (int i = 0; i < numParts; i++) {
+            glDrawElementsInstanced(GL_TRIANGLE_STRIP, numVertIdxsPerPart, GL_UNSIGNED_SHORT,
+                                    (GLvoid *) (sizeof(GLushort) * i * numVertIdxsPerPart), n);
+        }
+    }
+
+    assert(glGetError() == 0);
+
+}
+
+Sphere::Sphere(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Program> &program,
+               const std::shared_ptr<Mesh> &mesh) : camera_(camera), program_(program), mesh_(mesh) {
 
 }
