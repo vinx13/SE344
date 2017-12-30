@@ -15,13 +15,13 @@
 
 #include "shader.h"
 
-Program::Program() : is_linked(false), vert(nullptr), frag(nullptr), geom(nullptr) {
+Program::Program() : is_linked(false), vert_(nullptr), frag_(nullptr), geom_(nullptr) {
     this->id = glCreateProgram();
 }
 
-Program::Program(Shader *s0, Shader *s1) : Program{} {
-    this->attachShader(s0);
-    this->attachShader(s1);
+Program::Program(const std::shared_ptr<Shader> s0, const std::shared_ptr<Shader> s1) : Program{} {
+    this->attachShader(std::move(s0));
+    this->attachShader(std::move(s1));
 }
 
 Program::~Program() {
@@ -37,16 +37,16 @@ void Program::setMat4(const char *name, const glm::mat4 &mat) {
 
 }
 
-void Program::attachShader(Shader *s) {
+void Program::attachShader(const std::shared_ptr<Shader> s) {
     switch (s->type) {
         case GL_VERTEX_SHADER:
-            this->vert = s;
+            this->vert_ = s;
             break;
         case GL_FRAGMENT_SHADER:
-            this->frag = s;
+            this->frag_ = s;
             break;
         case GL_GEOMETRY_SHADER:
-            this->geom = s;
+            this->geom_ = s;
             break;
     }
     glAttachShader(this->id, s->id);
@@ -61,14 +61,17 @@ void Program::link() {
     this->is_linked = true;
 
 
-    if (this->vert) {
-        glDetachShader(this->id, this->vert->id);
+    if (this->vert_) {
+        glDetachShader(this->id, this->vert_->id);
+        this->vert_ = nullptr;
     }
-    if (this->frag) {
-        glDetachShader(this->id, this->frag->id);
+    if (this->frag_) {
+        glDetachShader(this->id, this->frag_->id);
+        this->frag_ = nullptr;
     }
-    if (this->geom) {
-        glDetachShader(this->id, this->geom->id);
+    if (this->geom_) {
+        glDetachShader(this->id, this->geom_->id);
+        this->geom_ = nullptr;
     }
 }
 

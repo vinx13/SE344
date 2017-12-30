@@ -73,11 +73,11 @@ void ContainerDrawable::render(const glm::mat4 &mvp) {
 Pool::Pool(const glm::mat4 &model) : UIObject(model) {
     sim = new SphSim(kNX, kNY, kNZ);
     auto program = std::make_shared<Program>();
-    auto vert = std::make_unique<Shader>(GL_VERTEX_SHADER, "shader/vert.glsl");
-    auto frag = std::make_unique<Shader>(GL_FRAGMENT_SHADER, "shader/frag.glsl");
+    auto vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/vert.glsl");
+    auto frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/frag.glsl");
 
-    program->attachShader(vert.get());
-    program->attachShader(frag.get());
+    program->attachShader(vert);
+    program->attachShader(frag);
     program->link();
     program->use();
     drawable_ = std::make_shared<ContainerDrawable>(program);

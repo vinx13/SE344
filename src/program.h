@@ -20,11 +20,11 @@ public:
 
     Program();
 
-    Program(Shader *s0, Shader *s1);
+    Program(const std::shared_ptr<Shader> s0, const std::shared_ptr<Shader> s1);
 
     ~Program();
 
-    void attachShader(Shader *s);
+    void attachShader(const std::shared_ptr<Shader> s);
 
     void link();
 
@@ -42,7 +42,7 @@ public:
 
 private:
     bool is_linked;
-    Shader *vert, *frag, *geom;
+    std::shared_ptr<Shader> vert_, frag_, geom_;
 
     void check(GLenum what_to_check);
 

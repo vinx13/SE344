@@ -66,9 +66,9 @@ void UIApplication::init(const std::string &modelPath) {
     glfwSetMouseButtonCallback(window_, mouse_button_callback);
 
     glBindVertexArray(0);
-    auto vert = std::make_unique<Shader>(GL_VERTEX_SHADER, "shader/vert.glsl");
-    auto frag = std::make_unique<Shader>(GL_FRAGMENT_SHADER, "shader/frag.glsl");
-    program_ = std::make_unique<Program>(vert.get(), frag.get());
+    auto vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/vert.glsl");
+    auto frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/frag.glsl");
+    program_ = std::make_unique<Program>(vert, frag);
     program_->link();
     program_->use();
     //

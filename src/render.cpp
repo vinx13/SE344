@@ -15,9 +15,9 @@
 Renderer::Renderer() {
     mesh_ = std::make_unique<SphereMesh>(5, 5, 0.06);
     mesh_->enableInstance();
-    auto vert = std::make_unique<Shader>(GL_VERTEX_SHADER, "shader/particle.vert");
-    auto frag = std::make_unique<Shader>(GL_FRAGMENT_SHADER, "shader/particle.frag");
-    program_ = std::make_shared<Program>(vert.get(), frag.get());
+    auto vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/particle.vert");
+    auto frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/particle.frag");
+    program_ = std::make_shared<Program>(vert, frag);
     program_->link();
     program_->use();
 
