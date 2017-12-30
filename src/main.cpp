@@ -9,7 +9,7 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-
+#include "mesher.h"
 #include "uiapplication.h"
 
 static void error_callback(int error, const char* description) {

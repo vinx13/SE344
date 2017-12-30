@@ -38,8 +38,13 @@ constexpr float kTimeStep = 0.02f;
 constexpr float kRebounceCoeff = 0.9f;
 
 
-constexpr float kMcRes = 0.5f;
-constexpr float kMcMargin = 3;
+constexpr float kMcStep = 1.f;
+constexpr float kMcMargin = 1.f;
+constexpr int kMcNx = static_cast<int>((kXMax + 2 * kMcMargin) / kMcStep + 1);
+constexpr int kMcNy = static_cast<int>((kYMax + 2 * kMcMargin) / kMcStep + 1);
+constexpr int kMcNz = static_cast<int>((kZMax + 2 * kMcMargin) / kMcStep + 1);
+constexpr int kMcGridSize = kMcNx * kMcNy * kMcNz;
+
 constexpr float kMcThreshold = 2.5f * kParticleMass / kPoly6;
 constexpr float kMcPolyThreshold = kParticleMass * .6 / kPoly6;
 

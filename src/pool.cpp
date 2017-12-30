@@ -12,6 +12,7 @@
 #include "program.h"
 #include "render.h"
 #include "sph.h"
+#include "mesher.h"
 
 ContainerDrawable::ContainerDrawable(const std::shared_ptr<Program> &program) : Drawable(program) {
     float vertices[] = {

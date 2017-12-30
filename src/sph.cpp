@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <random>
 #include "sph.h"
+#include "mesher.h"
 #include "uiapplication.h"
 
 SphSim::SphSim(float width, float height, float depth) {
@@ -85,9 +86,9 @@ void SphSim::updateDensities() {
             auto &neighborPosition = particles_->positions[neighbor];
             auto r = particlePosition - neighborPosition;
             auto dist2 = glm::dot(r, r); // dist = ||r||^2
-            auto diff2 = kSmoothRadius2 - dist2; // h^2 - r^2
-            if (diff2 > 0) {
-                auto deltaDensity = (kParticleMass * kPoly6) * diff2 * diff2 * diff2; // m_j * W_{ij}
+            auto sqrDiff = kSmoothRadius2 - dist2; // h^2 - r^2
+            if (sqrDiff > 0) {
+                auto deltaDensity = (kParticleMass * kPoly6) * sqrDiff * sqrDiff * sqrDiff; // m_j * W_{ij}
                 particles_->densities[i] += deltaDensity;
                 particles_->densities[neighbor] += deltaDensity;
             }

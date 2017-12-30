@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include "mesher.h"
+
 class Program;
 
 class ParticleSet;
@@ -29,11 +31,14 @@ public:
 
     virtual ~Renderer() {}
 
+    void setDrawParticles(bool drawParticles);
+
 private:
-    std::shared_ptr<SphereMesh> mesh_;
+    std::shared_ptr<SphereMesh> sphereMesh_;
     std::shared_ptr<Camera> camera_;
-    std::shared_ptr<Program> program_;
-    GLuint position_buffer_;
+    std::shared_ptr<Program> particleProgram_;
+    std::unique_ptr<Mesher> mesher_;
+    bool drawParticles_;
 };
 
 
