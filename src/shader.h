@@ -13,7 +13,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-
+#include <memory>
 #include <GL/gl3w.h>
 
 class Shader {
