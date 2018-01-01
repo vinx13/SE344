@@ -42,6 +42,8 @@ public:
     const std::vector<std::shared_ptr<Particle>> &getParticles() const;
     SphSim *sim;
 
+    void toggleDrawParticle();
+
 private:
     std::vector<std::shared_ptr<Particle>> particles_;
    // std::unique_ptr<SphSim> sph_;

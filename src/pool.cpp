@@ -84,12 +84,17 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
     drawable_ = std::make_shared<ContainerDrawable>(program);
 
     renderer_ = std::make_unique<Renderer>();
+    renderer_->setDrawParticles(false);
 }
 
 void Pool::render() {
-    renderer_->render(sim->getParticles());
+    renderer_->render(sim->getParticles(),sim->getGrid());
 }
 
 void Pool::update(double deltaTime) {
     sim->update(deltaTime);
+}
+
+void Pool::toggleDrawParticle() {
+    renderer_->setDrawParticles(!renderer_->isDrawParticles());
 }

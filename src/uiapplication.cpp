@@ -155,6 +155,8 @@ void UIApplication::processInput() {
         camera_->onKeyboard(Camera::Backward, delta);
     } else if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS) {
 
+    } else if (glfwGetKey(window_, GLFW_KEY_TAB) == GLFW_PRESS) {
+        pool_->toggleDrawParticle();
     }
 }
 

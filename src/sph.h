@@ -60,6 +60,8 @@ public:
 
     const ParticleSet &getParticles() const;
 
+    const Grid &getGrid() const;
+
 private:
     std::unique_ptr<ParticleSet> particles_;
     std::unique_ptr<Grid> grid_;

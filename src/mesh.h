@@ -20,9 +20,9 @@ public:
     virtual void bind() = 0;
 };
 
-class TriangleMesh : public Mesh {
+class ParticleMesh : public Mesh {
 public:
-    TriangleMesh (const std::vector<glm::vec3> &&vertices);
+    ParticleMesh (const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices);
 
     void render(Program &program) override;
 
@@ -30,6 +30,7 @@ public:
 
 private:
     std::vector<glm::vec3> vertices_;
+    std::vector<unsigned short> indices_;
     std::vector<glm::vec3> normals_;
 
 
@@ -37,6 +38,7 @@ private:
 
     GLuint vao_;
     GLuint vbo_;
+    GLuint ebo_;
 };
 
 #endif //SE344_MESH_H

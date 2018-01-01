@@ -183,3 +183,7 @@ void SphSim::update(double deltaTime) {
 const ParticleSet &SphSim::getParticles() const {
     return *particles_;
 }
+
+const Grid &SphSim::getGrid() const {
+    return *grid_;
+}

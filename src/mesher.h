@@ -12,23 +12,44 @@
 #include <vector>
 #include <memory>
 #include "constant.h"
+#include "mesh.h"
+#include "sph.h"
 
-class Mesh;
 class ParticleSet;
+
+template<class T>
+class ScalarField {
+public:
+    T &at(int x, int y, int z) {
+        return value[getMcGridIndex(x, y, z)];
+    }
+    const T &at(int x, int y, int z) const {
+        return value[getMcGridIndex(x, y, z)];
+    }
+private:
+    int getMcGridIndex(int x, int y, int z) const { return x * kMcNy * kMcNz + y * kMcNz + z; }
+
+    std::array<T, kMcGridSize> value;
+};
 
 class Mesher {
 public:
     Mesher();
 
-     std::unique_ptr<Mesh> createMesh(const ParticleSet &particles);
+    std::unique_ptr<ParticleMesh> createMesh(const ParticleSet &particles, const Grid &grid);
 
 private:
     void buildScalarField(const ParticleSet &particles);
-    std::vector<glm::vec3> generateIsoSurface();
-    int getMcGridIndex(int x, int y, int z);
 
-    float calculateDensityAt(const ParticleSet &particles, int x, int y, int z);
-    std::unique_ptr<std::array<float, kMcGridSize>> scalarField_;
+    float calculateDensityAt(const ParticleSet &particles, int x, int y, int z) const;
+
+    std::unique_ptr<ScalarField<float>> scalarField_;
+
+
+
+    float calcDensityAt(const ParticleSet &particles, const Grid &grid, int x, int y, int z) const;
+
+    void calcSlice(const ParticleSet &particles, const Grid &grid, float *slice, int x) const;
 };
 
 

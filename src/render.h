@@ -27,16 +27,18 @@ class Renderer {
 public:
     Renderer();
 
-    void render(const ParticleSet &particles);
+    void render(const ParticleSet &particles, const Grid &grid);
 
     virtual ~Renderer() {}
 
     void setDrawParticles(bool drawParticles);
 
+    bool isDrawParticles() const;
+
 private:
     std::shared_ptr<SphereMesh> sphereMesh_;
     std::shared_ptr<Camera> camera_;
-    std::shared_ptr<Program> particleProgram_;
+    std::shared_ptr<Program> particleProgram_, waterProgram_;
     std::unique_ptr<Mesher> mesher_;
     bool drawParticles_;
 };

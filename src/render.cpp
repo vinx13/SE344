@@ -23,26 +23,47 @@ Renderer::Renderer() {
     particleProgram_->link();
     particleProgram_->use();
 
+    vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/water.vert");
+    frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/water.frag");
+    waterProgram_ = std::make_shared<Program>(vert, frag);
+    waterProgram_->link();
+    waterProgram_->use();
+
+
     assert(glGetError() == 0);
 
 }
 
-void Renderer::render(const ParticleSet &particles) {
-    particleProgram_->use();
-    particleProgram_->setMat4("mvp", UIApplication::getInstance().getProjectionMatrix() *
-                             UIApplication::getInstance().getViewMatrix());
+void Renderer::render(const ParticleSet &particles, const Grid &grid) {
+
+    auto mvp = UIApplication::getInstance().getProjectionMatrix() *
+               UIApplication::getInstance().getViewMatrix();
     if (drawParticles_) {
+        particleProgram_->use();
+        particleProgram_->setMat4("mvp", mvp);
+
         sphereMesh_->bind();
         sphereMesh_->renderInstanced(*particleProgram_, particles.positions.data(), kNumParticles);
     } else {
-        auto mesh_ = mesher_->createMesh(particles);
+        waterProgram_->use();
+        waterProgram_->setMat4("mvp", mvp);
+
+        auto mesh_ = mesher_->createMesh(particles, grid);
+
+        //particleProgram_->use();
+        //particleProgram_->setMat4("mvp", mvp);
+
         mesh_->bind();
-        mesh_->render(*particleProgram_);
+        mesh_->render(*waterProgram_);
     }
 }
 
 void Renderer::setDrawParticles(bool drawParticles) {
     drawParticles_ = drawParticles;
+}
+
+bool Renderer::isDrawParticles() const {
+    return drawParticles_;
 }
 
 
