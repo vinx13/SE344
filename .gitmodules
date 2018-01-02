@@ -7,3 +7,6 @@
 [submodule "deps/libsoundio"]
 	path = deps/libsoundio
 	url = git@github.com:andrewrk/libsoundio.git
+[submodule "deps/SOIL"]
+	path = deps/SOIL
+	url = git@github.com:DeVaukz/SOIL.git
