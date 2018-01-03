@@ -18,6 +18,7 @@
 #include "pool.h"
 #include "uiobject.h"
 #include "obj.h"
+#include "skybox.h"
 
 
 class UIApplication {
@@ -59,6 +60,7 @@ private:
     std::shared_ptr<Camera> camera_;
     std::unique_ptr<ObjLoader> loader_;
     std::unique_ptr<Pool> pool_;
+    std::unique_ptr<Skybox> skybox_;
 
     void processInput();
 

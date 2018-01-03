@@ -14,8 +14,9 @@ find_package(glm REQUIRED)
 
 file(GLOB SOURCE_FILES src/*.cpp src/*.h)
 file(GLOB SHADER_FILES src/shader/*)
+file(COPY src/desert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-include_directories(${glfw_INCLUDE_DIRS} ${libsoundio_SOURCE_DIR} deps/glm)
+include_directories(${glfw_INCLUDE_DIRS} ${libsoundio_SOURCE_DIR} deps/glm deps/SOIL/src)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} gl3w glfw libsoundio_shared ${LIBSOUNDIO_LIBS} ${LIBM} ${OPENGL_LIBRARIES} SOIL_Static)

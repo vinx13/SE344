@@ -83,7 +83,7 @@ void UIApplication::init(const std::string &modelPath) {
 
     //auto sphere = std::make_shared<Sphere>(program_, false);
 
-   // object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
+    // object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
 
     auto drawable = loader_->load(modelPath);
     drawable->setProgram(program_);
@@ -93,11 +93,16 @@ void UIApplication::init(const std::string &modelPath) {
     drawable = std::make_shared<ContainerDrawable>(program_);
     pool_->setDrawable(drawable);
 
-    // position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.f, float pitch = 0
+    skybox_ = std::make_unique<Skybox>("desert/desert_ft.tga","desert/desert_bk.tga",
+                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_rt.tga", "desert/desert_lf.tga" );
+
+//    skybox_ = std::make_unique<Skybox>( "desert/desert_lf.tga","desert/desert_rt.tga",
+//                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_ft.tga", "desert/desert_bk.tga");
+//    // position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.f, float pitch = 0
 //    this->camera_ = std::make_unique<Camera>(-20.f, 20.f, 5.f,
 //                                             0.f, 1.f, 0.f,
 //                                             -45.f, -45.f);
-    this->camera_ = std::make_shared<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, -1.f, -90.f, -45.f);
+    this->camera_ = std::make_shared<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, 0.f, -90.f, 0);
     //glEnable(GL_POINT_SMOOTH);
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
@@ -127,8 +132,8 @@ void UIApplication::runLoop() {
 
         //object_->render();
         object2_->render();
-        pool_->render();
-
+        //pool_->render();
+        skybox_->render();
         lastTime_ = currentTime_;
 
         glfwSwapBuffers(window_);
