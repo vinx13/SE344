@@ -93,8 +93,12 @@ void UIApplication::init(const std::string &modelPath) {
     drawable = std::make_shared<ContainerDrawable>(program_);
     pool_->setDrawable(drawable);
 
-    skybox_ = std::make_unique<Skybox>("desert/desert_ft.tga","desert/desert_bk.tga",
-                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_rt.tga", "desert/desert_lf.tga" );
+    skybox_ = std::make_unique<Skybox>("resource/desert/desert_ft.tga",
+                                       "resource/desert/desert_bk.tga",
+                                       "resource/desert/desert_up.tga",
+                                       "resource/desert/desert_dn.tga",
+                                       "resource/desert/desert_rt.tga",
+                                       "resource/desert/desert_lf.tga" );
     fps_ = std::make_unique<FpsCounter>();
 //    skybox_ = std::make_unique<Skybox>( "desert/desert_lf.tga","desert/desert_rt.tga",
 //                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_ft.tga", "desert/desert_bk.tga");

@@ -15,8 +15,7 @@ find_package(freetype REQUIRED)
 
 file(GLOB SOURCE_FILES src/*.cpp src/*.h)
 file(GLOB SHADER_FILES src/shader/*)
-file(COPY src/desert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY src/resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(${glfw_INCLUDE_DIRS} ${libsoundio_SOURCE_DIR} ${FREETYPE_INCLUDE_DIRS} deps/glm deps/SOIL/src)
 
