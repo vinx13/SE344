@@ -19,7 +19,7 @@
 #include "uiobject.h"
 #include "obj.h"
 #include "skybox.h"
-
+#include "fps.h"
 
 class UIApplication {
 public:
@@ -44,6 +44,10 @@ public:
 
     const std::shared_ptr<Camera> &getCamera() const;
 
+    const unsigned int getScreenWidth() const;
+
+    const unsigned int getScreenHeight() const;
+
 private:
     static UIApplication instance__;
 
@@ -61,6 +65,7 @@ private:
     std::unique_ptr<ObjLoader> loader_;
     std::unique_ptr<Pool> pool_;
     std::unique_ptr<Skybox> skybox_;
+    std::unique_ptr<FpsCounter> fps_;
 
     void processInput();
 

@@ -11,15 +11,17 @@ add_subdirectory(deps/glm)
 add_subdirectory(deps/libsoundio)
 add_subdirectory(deps/SOIL)
 find_package(glm REQUIRED)
+find_package(freetype REQUIRED)
 
 file(GLOB SOURCE_FILES src/*.cpp src/*.h)
 file(GLOB SHADER_FILES src/shader/*)
 file(COPY src/desert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY src/resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-include_directories(${glfw_INCLUDE_DIRS} ${libsoundio_SOURCE_DIR} deps/glm deps/SOIL/src)
+include_directories(${glfw_INCLUDE_DIRS} ${libsoundio_SOURCE_DIR} ${FREETYPE_INCLUDE_DIRS} deps/glm deps/SOIL/src)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} gl3w glfw libsoundio_shared ${LIBSOUNDIO_LIBS} ${LIBM} ${OPENGL_LIBRARIES} SOIL_Static)
+target_link_libraries(${PROJECT_NAME} gl3w glfw libsoundio_shared ${LIBSOUNDIO_LIBS} ${LIBM} ${OPENGL_LIBRARIES} SOIL_Static freetype)
 
 #add_custom_target(copy_shader ALL
 #        COMMAND cmake -E copy_directory src/shader ${CMAKE_BINARY_DIR}/shader)
