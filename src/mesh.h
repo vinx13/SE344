@@ -34,11 +34,13 @@ private:
     std::vector<glm::vec3> normals_;
 
 
-    void calculateNormals();
+    void calcNormals();
 
     GLuint vao_;
-    GLuint vbo_;
+    GLuint vbo_coord_, vbo_normal_;
     GLuint ebo_;
+
+    glm::vec3 calcPlaneNormal(unsigned short i1, unsigned short i2, unsigned short i3) const;
 };
 
 #endif //SE344_MESH_H
