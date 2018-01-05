@@ -99,7 +99,7 @@ void UIApplication::init(const std::string &modelPath) {
                                        "resource/desert/desert_dn.tga",
                                        "resource/desert/desert_rt.tga",
                                        "resource/desert/desert_lf.tga" );
-    fps_ = std::make_unique<FpsCounter>();
+    //fps_ = std::make_unique<FpsCounter>();
 //    skybox_ = std::make_unique<Skybox>( "desert/desert_lf.tga","desert/desert_rt.tga",
 //                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_ft.tga", "desert/desert_bk.tga");
 //    // position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.f, float pitch = 0
@@ -133,12 +133,12 @@ void UIApplication::runLoop() {
         //object_->update(delta);
         object2_->update(delta);
         pool_->update(delta);
-        fps_->update(delta);
+        //fps_->update(delta);
         //object_->render();
         object2_->render();
-        //pool_->render();
+        pool_->render();
         skybox_->render();
-        fps_->render();
+        //fps_->render();
         lastTime_ = currentTime_;
 
         glfwSwapBuffers(window_);

@@ -6,11 +6,13 @@
  *
  */
 #include "fps.h"
+#include "text_render.h"
 #include "uiapplication.h"
 
 FpsCounter::FpsCounter() :
     position_(5, UIApplication::getInstance().getScreenHeight() - 40) {
-    renderer_ = std::make_unique<TextRenderer>(FontManager::getDefault());
+    auto fontManager = std::make_shared<FontManager>("resource/Go-Mono.ttf", 0, 24);
+    renderer_ = std::make_unique<TextRenderer>(std::move(fontManager));
 }
 
 void FpsCounter::render() {
