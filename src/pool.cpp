@@ -83,6 +83,7 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
     program->use();
 
     axis_ = glm::vec3(0.f, 1.f, 0.f);
+    sim->setAxis(axis_);
     drawable_ = std::make_shared<ContainerDrawable>(program);
 
     renderer_ = std::make_unique<Renderer>();
@@ -106,8 +107,12 @@ void Pool::toggleDrawParticle() {
 void Pool::rotateIfHit(float x, float y, float xoffset, float yoffset) {
     //auto offset = glm::vec3(kXMax / 2, kYMax / 2, kZMax / 2);
     //auto t = glm::translate(renderer_->getModel(), -offset);
-    auto r = glm::rotate(glm::mat4(1.f), 0.01f * xoffset, axis_);
+    auto r = glm::rotate(glm::mat4(1.f), 0.01f * xoffset, glm::vec3(0.f,1.f,0.f));
     r = glm::rotate(r, 0.01f*yoffset, glm::vec3(-1.f,0.f,0.f));
     auto model = r*renderer_->getModel();
     renderer_->setModel(model);
+
+    auto rotate = glm::inverse(glm::mat3(r));
+    axis_ = rotate * axis_;
+    sim->setAxis(axis_);
 }

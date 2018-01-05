@@ -100,7 +100,7 @@ void SphSim::updateAccelerations() {
     for (int i = 0; i < kNumParticles; i++) {
         float particleDensity = particles_->densities[i];
 
-        particles_->accelerations[i] += kGravity; //* gravDirection[0];
+        particles_->accelerations[i] += axis_ * kGravity[1]; //* gravDirection[0];
         auto particlePosition = particles_->positions[i];
         float particleDensityRecip = kParticleMass / particleDensity;
 
@@ -186,4 +186,8 @@ const ParticleSet &SphSim::getParticles() const {
 
 const Grid &SphSim::getGrid() const {
     return *grid_;
+}
+
+void SphSim::setAxis(const glm::vec3 &axis) {
+    SphSim::axis_ = axis;
 }

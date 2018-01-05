@@ -23,9 +23,14 @@ Renderer::Renderer() {
     particleProgram_->link();
     particleProgram_->use();
 
-    vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/water.vert");
-    frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/water.frag");
-    waterProgram_ = std::make_shared<Program>(vert, frag);
+//    vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/normal.vert");
+//    frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/normal.frag");
+//    auto geom = std::make_shared<Shader>(GL_GEOMETRY_SHADER, "shader/normal.geom");
+//    waterProgram_ = std::make_shared<Program>(vert, frag);
+//    waterProgram_->attachShader(geom);
+
+    waterProgram_ = std::make_shared<Program>(std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/water.vert"),
+                                              std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/water.frag"));
     waterProgram_->link();
     waterProgram_->use();
 
@@ -36,9 +41,8 @@ Renderer::Renderer() {
 }
 
 void Renderer::render(const ParticleSet &particles, const Grid &grid) {
-
-    auto mvp = camera_->getProjectionMatrix() * camera_->getViewMatrix() * model_;
     if (drawParticles_) {
+        auto mvp = camera_->getProjectionMatrix() * camera_->getViewMatrix() * model_;
         particleProgram_->use();
         particleProgram_->setMat4("mvp", mvp);
 
@@ -46,9 +50,11 @@ void Renderer::render(const ParticleSet &particles, const Grid &grid) {
         sphereMesh_->renderInstanced(*particleProgram_, particles.positions.data(), kNumParticles);
     } else {
         waterProgram_->use();
-        waterProgram_->setMat4("mvp", mvp);
+        //waterProgram_->setMat4("mvp", mvp);
         waterProgram_->setVec3("cameraPos", camera_->getPosition());
         waterProgram_->setMat4("model", model_);
+        waterProgram_->setMat4("view", camera_->getViewMatrix());
+        waterProgram_->setMat4("projection", camera_->getProjectionMatrix());
 
         auto mesh_ = mesher_->createMesh(particles, grid);
 

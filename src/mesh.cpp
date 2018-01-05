@@ -41,6 +41,7 @@ void ParticleMesh::render(Program &program) {
     bind();
     program.use();
     assert(glGetError() == 0);
+    //glPolygonMode(GL_FRONT_AND_BACK ,GL_LINE   );
     glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT, nullptr);
     assert(glGetError() == 0);
 }
@@ -50,8 +51,12 @@ void ParticleMesh::bind() {
 }
 
 glm::vec3 ParticleMesh::calcPlaneNormal(unsigned short i1, unsigned short i2, unsigned short i3) const {
-    auto normal = glm::cross(vertices_[i2] - vertices_[i1], vertices_[i3] - vertices_[i1]);
-    return glm::normalize(normal);
+    auto &p1 = vertices_[i1], &p2 = vertices_[i2], &p3 = vertices_[i3];
+    auto v1 = p2-p1;
+    auto v2 = p3-p1;
+    auto normal = glm::cross(v1, v2);
+    auto normalized = glm::normalize(normal);
+    return normalized;
 }
 
 void ParticleMesh::calcNormals() {
@@ -65,10 +70,10 @@ void ParticleMesh::calcNormals() {
         normals_[i2] += normal;
         normals_[i3] += normal;
     }
-    std::transform(normals_.begin(), normals_.end(), normals_.begin(),
-                   [](const glm::vec3 &n) {
-                       return glm::normalize(n);
-                   }
-    );
+//    std::transform(normals_.begin(), normals_.end(), normals_.begin(),
+//                   [](const glm::vec3 &n) {
+//                       return glm::normalize(n);
+//                   }
+//    );
 }
 

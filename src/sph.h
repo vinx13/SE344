@@ -65,11 +65,15 @@ public:
 private:
     std::unique_ptr<ParticleSet> particles_;
     std::unique_ptr<Grid> grid_;
+    glm::vec3 axis_;
 
 
 
     GLuint offset_buffer;
+public:
+    void setAxis(const glm::vec3 &axis);
 
+private:
     void updateGrid();
 
     void updateDensities();
