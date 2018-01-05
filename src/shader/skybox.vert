@@ -5,6 +5,6 @@ out vec3 texCoords;
 
 void main()
 {
-	texCoords = vec3(aPos.x,aPos.y,aPos.z);
-	gl_Position = view*vec4(aPos.xyz, 1.0);
+	texCoords = aPos;
+	gl_Position = (view*vec4(aPos.xyz, 1.0)).xyww;
 }

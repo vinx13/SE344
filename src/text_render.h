@@ -28,10 +28,6 @@ struct Character {
 
 class FontManager {
 public:
-    static std::shared_ptr<FontManager> getDefault();
-
-    static std::shared_ptr<FontManager> defaultInstance__;
-
     FontManager(const std::string &font, int width, int height);
 
     const Character &getCharacter(char c) {

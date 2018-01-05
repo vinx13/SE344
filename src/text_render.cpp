@@ -9,13 +9,6 @@
 #include "program.h"
 #include "uiapplication.h"
 
-std::shared_ptr<FontManager> FontManager::defaultInstance__;
-
-std::shared_ptr<FontManager> FontManager::getDefault() {
-    if (!defaultInstance__)
-        defaultInstance__ = std::make_shared<FontManager>("resource/Go-Mono.ttf", 0, 24);
-    return defaultInstance__;
-}
 
 FontManager::FontManager(const std::string &font, int width, int height) {
     // FreeType
@@ -28,7 +21,7 @@ FontManager::FontManager(const std::string &font, int width, int height) {
     assert(0 == FT_New_Face(ft, font.c_str(), 0, &face));
     assert(face);
     // Set size to load glyphs as
-    FT_Set_Pixel_Sizes(face, width, height);
+    assert(0 == FT_Set_Pixel_Sizes(face, width, height));
     glActiveTexture(GL_TEXTURE1);
     // Disable byte-alignment restriction
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -74,7 +67,7 @@ FontManager::FontManager(const std::string &font, int width, int height) {
     FT_Done_FreeType(ft);
 }
 
-TextRenderer::TextRenderer(const std::shared_ptr<FontManager> &fontManager): fontManager_(fontManager) {
+TextRenderer::TextRenderer(const std::shared_ptr<FontManager> &fontManager) : fontManager_(fontManager) {
     program_ = std::make_unique<Program>(
         std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/text.vert"),
         std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/text.frag")

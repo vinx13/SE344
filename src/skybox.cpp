@@ -130,7 +130,8 @@ auto view=  UIApplication::getInstance().getViewMatrix();
     glBindVertexArray(vao_);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
 //glDrawArrays(GL_TRIANGLES, 36,0);
-    glDepthFunc(GL_LESS);
+    //glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
     assert(glGetError() == 0);
 
 
