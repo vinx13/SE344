@@ -94,6 +94,10 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
 
 void Pool::render() {
     renderer_->render(sim->getParticles(), sim->getGrid());
+//    auto ax = sim->getAxis();
+//    ax = glm::normalize(glm::mat3(model_)*ax);
+//    std::cout << ax.x << ' ' << ax.y << ' ' << ax.z << std::endl;
+//    axisRenderer_.render(sim->getAxis(), renderer_->getModel());
 }
 
 void Pool::update(double deltaTime) {
@@ -112,7 +116,10 @@ void Pool::rotateIfHit(float x, float y, float xoffset, float yoffset) {
     auto model = r*renderer_->getModel();
     renderer_->setModel(model);
 
-    auto rotate = glm::inverse(glm::mat3(r));
-    axis_ = rotate * axis_;
+    auto raxis = glm::mat3(glm::inverse(r));
+    auto id = raxis * glm::mat3(r);
+    //std::cout << raxis *glm::mat3(r) << std::endl;
+    //axis_ = glm::normalize(raxis * axis_);
+    axis_ = glm::normalize(glm::mat3(glm::inverse(model))*glm::vec3(0.f,1.f,0.f));
     sim->setAxis(axis_);
 }

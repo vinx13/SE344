@@ -191,3 +191,7 @@ const Grid &SphSim::getGrid() const {
 void SphSim::setAxis(const glm::vec3 &axis) {
     SphSim::axis_ = axis;
 }
+
+const glm::vec3 &SphSim::getAxis() const {
+    return axis_;
+}

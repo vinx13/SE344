@@ -73,6 +73,8 @@ private:
 public:
     void setAxis(const glm::vec3 &axis);
 
+    const glm::vec3 &getAxis() const;
+
 private:
     void updateGrid();
 
