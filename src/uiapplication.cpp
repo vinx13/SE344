@@ -74,6 +74,7 @@ void UIApplication::init(const std::string &modelPath) {
     //
 
     //program_->setMat4("projection", getProjectionMatrix());
+    this->camera_ = std::make_shared<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, 0.f, -90.f, 0);
 
     auto translate = glm::vec3(-2.f, 0.f, 0.f);
     this->object_ = std::make_unique<UIMovingObject>(glm::translate(glm::mat4(1.f), -translate));
@@ -106,7 +107,7 @@ void UIApplication::init(const std::string &modelPath) {
 //    this->camera_ = std::make_unique<Camera>(-20.f, 20.f, 5.f,
 //                                             0.f, 1.f, 0.f,
 //                                             -45.f, -45.f);
-    this->camera_ = std::make_shared<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, 0.f, -90.f, 0);
+
     //glEnable(GL_POINT_SMOOTH);
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
@@ -128,7 +129,7 @@ void UIApplication::runLoop() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         program_->use();
-        //program_->setMat4("view", camera_->genViewMatrix());
+        //program_->setMat4("view", camera_->getViewMatrix());
 
         //object_->update(delta);
         object2_->update(delta);
@@ -408,7 +409,7 @@ void UIApplication::overflow_callback(struct SoundIoInStream *instream) {
 }
 
 glm::mat4 UIApplication::getViewMatrix() const {
-    return camera_->genViewMatrix();
+    return camera_->getViewMatrix();
 }
 
 glm::mat4 UIApplication::getProjectionMatrix() const {

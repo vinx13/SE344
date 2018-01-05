@@ -41,6 +41,10 @@ public:
 
     void setMat4(const char *name, const glm::mat4 &mat);
 
+    void setVec3(const char *name, const glm::vec3 &vec);
+
+    void setInt(const char *name, int i);
+
 private:
     bool is_linked;
     std::shared_ptr<Shader> vert_, frag_, geom_;

@@ -34,8 +34,17 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 }
 
 // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-glm::mat4 Camera::genViewMatrix() {
+glm::mat4 Camera::getViewMatrix() const {
     return glm::lookAt(position_, position_ + front_, up_);
+}
+
+glm::vec3 Camera::getPosition() const {
+    return position_;
+}
+
+glm::mat4 Camera::getProjectionMatrix() const {
+    const auto perspective = glm::perspective(glm::radians(60.0f), 1.33f, 0.1f, 100.0f);
+    return perspective;
 }
 
 // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)

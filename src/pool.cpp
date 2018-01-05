@@ -85,6 +85,7 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
 
     renderer_ = std::make_unique<Renderer>();
     renderer_->setDrawParticles(false);
+    renderer_->setCamera(UIApplication::getInstance().getCamera());
 }
 
 void Pool::render() {

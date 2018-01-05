@@ -40,7 +40,11 @@ public:
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-    glm::mat4 genViewMatrix();
+    glm::mat4 getViewMatrix() const;
+
+    glm::vec3 getPosition() const;
+
+    glm::mat4 getProjectionMatrix() const;
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void onKeyboard(kCameraMovement direction, float deltaTime);

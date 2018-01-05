@@ -38,6 +38,10 @@ public:
 private:
     std::shared_ptr<SphereMesh> sphereMesh_;
     std::shared_ptr<Camera> camera_;
+public:
+    void setCamera(const std::shared_ptr<Camera> &camera);
+
+private:
     std::shared_ptr<Program> particleProgram_, waterProgram_;
     std::unique_ptr<Mesher> mesher_;
     bool drawParticles_;

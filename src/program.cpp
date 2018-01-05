@@ -34,7 +34,14 @@ void Program::setMat4(const char *name, const glm::mat4 &mat) {
     glUniformMatrix4fv(loc, 1, false, glm::value_ptr(mat));
 
     assert(glGetError() == 0);
+}
 
+void Program::setVec3(const char *name, const glm::vec3 &vec) {
+    auto loc = glGetUniformLocation(this->id, name);
+    assert(glGetError() == 0);
+    glUniform3fv(loc, 1, glm::value_ptr(vec));
+
+    assert(glGetError() == 0);
 }
 
 void Program::attachShader(const std::shared_ptr<Shader> s) {
