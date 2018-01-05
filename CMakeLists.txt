@@ -5,11 +5,7 @@ project(SE344)
 set(CMAKE_CXX_STANDARD 14)
 find_package(OpenGL REQUIRED)
 
-add_subdirectory(deps/glfw)
-add_subdirectory(deps/gl3w)
-add_subdirectory(deps/glm)
-add_subdirectory(deps/libsoundio)
-add_subdirectory(deps/SOIL)
+add_subdirectory(deps)
 find_package(glm REQUIRED)
 find_package(freetype REQUIRED)
 
