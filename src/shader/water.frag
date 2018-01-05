@@ -14,6 +14,6 @@ void main() {
     float ratio = 1.00 / 1.52;
     vec3 R_refract = refract(I, normal, ratio);
     vec4 color_refract = texture(skybox, R_refract);
-
-    FragColor = mix(color_reflect, color_refract, 0.75);
+    //FragColor = texture(skybox, I) * 0.7;
+    //FragColor = color_refract*0.7;
 }

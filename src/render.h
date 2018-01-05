@@ -45,6 +45,11 @@ private:
     std::shared_ptr<Program> particleProgram_, waterProgram_;
     std::unique_ptr<Mesher> mesher_;
     bool drawParticles_;
+    glm::mat4 model_;
+public:
+    void setModel(const glm::mat4 &model_);
+
+    const glm::mat4 &getModel() const;
 };
 
 

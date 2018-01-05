@@ -81,15 +81,18 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
     program->attachShader(frag);
     program->link();
     program->use();
+
+    axis_ = glm::vec3(0.f, 1.f, 0.f);
     drawable_ = std::make_shared<ContainerDrawable>(program);
 
     renderer_ = std::make_unique<Renderer>();
     renderer_->setDrawParticles(false);
     renderer_->setCamera(UIApplication::getInstance().getCamera());
+    renderer_->setModel(glm::translate(glm::mat4(1.f), glm::vec3(-kXMax/2,-kYMax/2,-kZMax/2)));
 }
 
 void Pool::render() {
-    renderer_->render(sim->getParticles(),sim->getGrid());
+    renderer_->render(sim->getParticles(), sim->getGrid());
 }
 
 void Pool::update(double deltaTime) {
@@ -98,4 +101,13 @@ void Pool::update(double deltaTime) {
 
 void Pool::toggleDrawParticle() {
     renderer_->setDrawParticles(!renderer_->isDrawParticles());
+}
+
+void Pool::rotateIfHit(float x, float y, float xoffset, float yoffset) {
+    //auto offset = glm::vec3(kXMax / 2, kYMax / 2, kZMax / 2);
+    //auto t = glm::translate(renderer_->getModel(), -offset);
+    auto r = glm::rotate(glm::mat4(1.f), 0.01f * xoffset, axis_);
+    r = glm::rotate(r, 0.01f*yoffset, glm::vec3(-1.f,0.f,0.f));
+    auto model = r*renderer_->getModel();
+    renderer_->setModel(model);
 }

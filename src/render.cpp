@@ -28,6 +28,7 @@ Renderer::Renderer() {
     waterProgram_ = std::make_shared<Program>(vert, frag);
     waterProgram_->link();
     waterProgram_->use();
+
     glUniform1i(waterProgram_->getUniform("skybox"), 0);
 
     assert(glGetError() == 0);
@@ -36,7 +37,7 @@ Renderer::Renderer() {
 
 void Renderer::render(const ParticleSet &particles, const Grid &grid) {
 
-    auto mvp = camera_->getProjectionMatrix() * camera_->getViewMatrix();
+    auto mvp = camera_->getProjectionMatrix() * camera_->getViewMatrix() * model_;
     if (drawParticles_) {
         particleProgram_->use();
         particleProgram_->setMat4("mvp", mvp);
@@ -47,6 +48,7 @@ void Renderer::render(const ParticleSet &particles, const Grid &grid) {
         waterProgram_->use();
         waterProgram_->setMat4("mvp", mvp);
         waterProgram_->setVec3("cameraPos", camera_->getPosition());
+        waterProgram_->setMat4("model", model_);
 
         auto mesh_ = mesher_->createMesh(particles, grid);
 
@@ -68,6 +70,14 @@ bool Renderer::isDrawParticles() const {
 
 void Renderer::setCamera(const std::shared_ptr<Camera> &camera) {
     camera_ = camera;
+}
+
+void Renderer::setModel(const glm::mat4 &model) {
+    model_ = model;
+}
+
+const glm::mat4 &Renderer::getModel() const {
+    return model_;
 }
 
 

@@ -48,6 +48,8 @@ public:
 
     const unsigned int getScreenHeight() const;
 
+    void onMouseDraging(float x, float y, float xoffset, float yoffset);
+
 private:
     static UIApplication instance__;
 

@@ -44,8 +44,11 @@ public:
 
     void toggleDrawParticle();
 
+    void rotateIfHit(float x, float y, float xoffset, float yoffset);
+
 private:
     std::vector<std::shared_ptr<Particle>> particles_;
+    glm::vec3 axis_;
    // std::unique_ptr<SphSim> sph_;
 };
 

@@ -58,6 +58,8 @@ void UIApplication::init(const std::string &modelPath) {
 #endif
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
     //glDepthMask(GL_FALSE);
 
     glfwSetFramebufferSizeCallback(window_, framebuffer_size_callback);
@@ -74,7 +76,7 @@ void UIApplication::init(const std::string &modelPath) {
     //
 
     //program_->setMat4("projection", getProjectionMatrix());
-    this->camera_ = std::make_shared<Camera>(0.f, 20.f, 20.f, 0.f, 1.f, 0.f, -90.f, 0);
+    this->camera_ = std::make_shared<Camera>(0.f, 0.f, 50.f, 0.f, 1.f, 0.f, -90.f, 0);
 
     auto translate = glm::vec3(-2.f, 0.f, 0.f);
     this->object_ = std::make_unique<UIMovingObject>(glm::translate(glm::mat4(1.f), -translate));
@@ -99,7 +101,7 @@ void UIApplication::init(const std::string &modelPath) {
                                        "resource/desert/desert_up.tga",
                                        "resource/desert/desert_dn.tga",
                                        "resource/desert/desert_rt.tga",
-                                       "resource/desert/desert_lf.tga" );
+                                       "resource/desert/desert_lf.tga");
     //fps_ = std::make_unique<FpsCounter>();
 //    skybox_ = std::make_unique<Skybox>( "desert/desert_lf.tga","desert/desert_rt.tga",
 //                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_ft.tga", "desert/desert_bk.tga");
@@ -132,12 +134,14 @@ void UIApplication::runLoop() {
         //program_->setMat4("view", camera_->getViewMatrix());
 
         //object_->update(delta);
+        glCullFace(GL_FRONT);
         object2_->update(delta);
         pool_->update(delta);
         //fps_->update(delta);
         //object_->render();
         object2_->render();
         pool_->render();
+
         skybox_->render();
         //fps_->render();
         lastTime_ = currentTime_;
@@ -202,7 +206,11 @@ void UIApplication::mouse_callback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    instance__.camera_->onMouseMovement(xoffset, yoffset);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        instance__.onMouseDraging(xpos, ypos, xoffset, yoffset);
+    } else {
+        instance__.camera_->onMouseMovement(xoffset, yoffset);
+    }
 }
 
 void UIApplication::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
@@ -427,4 +435,8 @@ const unsigned int UIApplication::getScreenWidth() const {
 
 const unsigned int UIApplication::getScreenHeight() const {
     return kScreenHeight;
+}
+
+void UIApplication::onMouseDraging(float x, float y, float xoffset, float yoffset) {
+    pool_->rotateIfHit(x, y, xoffset, yoffset);
 }

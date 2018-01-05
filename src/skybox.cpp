@@ -82,7 +82,7 @@ Skybox::Skybox(const std::string &xpos, const std::string &xneg, const std::stri
     };
     const unsigned short indices[] = {
         4, 0, 3,
-        3, 4, 7,
+        3, 7, 4,
         2, 6, 7,
         2, 7, 3,
         1, 5, 2,
@@ -91,8 +91,8 @@ Skybox::Skybox(const std::string &xpos, const std::string &xneg, const std::stri
         4, 5, 1,
         0, 1, 2,
         0, 2, 3,
-        4, 5, 6,
-        4, 6, 7
+        4, 6, 5,
+        4, 7, 6
     };
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
