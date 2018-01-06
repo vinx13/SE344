@@ -96,6 +96,8 @@ float Mesher::calcDensityAt(const ParticleSet &particles, const Grid &grid, int 
                 auto gridIndex = i * kNY * kNZ + j * kNZ + k;
                 for (int particle = grid.starts[gridIndex];
                      density < kMcThreshold & particle < grid.ends[gridIndex]; particle++) {
+
+                    assert(particle < kNumParticles);
                     auto r = (particles.positions[particle] - point);
                     float sqrDiff = std::max(0.f, kSmoothRadius2 - glm::dot(r, r));
                     density += particles.densities[particle] * sqrDiff * sqrDiff * sqrDiff;

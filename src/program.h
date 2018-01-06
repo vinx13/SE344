@@ -41,6 +41,8 @@ public:
 
     void setMat4(const char *name, const glm::mat4 &mat);
 
+    void setMat3(const char *name, const glm::mat3 &mat);
+
     void setVec3(const char *name, const glm::vec3 &vec);
 
     void setInt(const char *name, int i);

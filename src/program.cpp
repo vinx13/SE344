@@ -36,6 +36,14 @@ void Program::setMat4(const char *name, const glm::mat4 &mat) {
     assert(glGetError() == 0);
 }
 
+void Program::setMat3(const char *name, const glm::mat3 &mat) {
+    auto loc = glGetUniformLocation(this->id, name);
+    assert(glGetError() == 0);
+    glUniformMatrix3fv(loc, 1, false, glm::value_ptr(mat));
+
+    assert(glGetError() == 0);
+}
+
 void Program::setVec3(const char *name, const glm::vec3 &vec) {
     auto loc = glGetUniformLocation(this->id, name);
     assert(glGetError() == 0);

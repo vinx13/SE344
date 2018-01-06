@@ -194,6 +194,7 @@ void UIApplication::mouse_callback(GLFWwindow *window, double xpos, double ypos)
     static float lastY = 600 / 2.0f;
     static bool firstMouse = true;
 
+    if (xpos > UIApplication::getInstance().getScreenWidth() || ypos > UIApplication::getInstance().getScreenHeight()) return;
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;

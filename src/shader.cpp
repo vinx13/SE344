@@ -47,7 +47,7 @@ std::vector<std::string> Shader::readShaderFile(const std::vector<std::string> &
             sources.push_back(std::move(source_code));
         }
         catch (const std::ifstream::failure &e) {
-            std::cerr << "Failed to read shader file " << file << std::endl;
+            std::cerr << "Failed to read shader file " << file << ' ' << e.what() << std::endl;
         }
     }
 

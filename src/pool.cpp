@@ -53,6 +53,7 @@ ContainerDrawable::ContainerDrawable(const std::shared_ptr<Program> &program) : 
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     assert(glGetError() == 0);
 
+    program->use();
     program->setMat4("projection", UIApplication::getInstance().getProjectionMatrix());
 }
 
