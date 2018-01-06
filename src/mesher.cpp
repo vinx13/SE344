@@ -5,6 +5,7 @@
  * Copyright (c) 2017 Wuwei Lin. All rights reserved.
  *
  */
+#include <algorithm>
 #include "mesher.h"
 #include "sph.h"
 #include "mesh.h"
@@ -37,8 +38,8 @@ std::unique_ptr<ParticleMesh> Mesher::createMesh(const ParticleSet &particles, c
     auto sliceSize = kMcNz * kMcNy;
     auto *slices = new float[2 * sliceSize];
     Edges *edges = new Edges[2 * sliceSize];
-    MarchingCube mc(kMcPolyThreshold);
-
+    MarchingCube mc(kPolyThreshold);
+    calcDensityField(particles, grid);
     Edges emptyCube;
     emptyCube.fill(-1);
 
@@ -78,9 +79,26 @@ std::unique_ptr<ParticleMesh> Mesher::createMesh(const ParticleSet &particles, c
 void Mesher::calcSlice(const ParticleSet &particles, const Grid &grid, float *slice, int x) const {
     for (int y = 0; y <= kMcNy; ++y) {
         for (int z = 0; z <= kMcNz; ++z) {
-            slice[y * kMcNz + z] = calcDensityAt(particles, grid, x, y, z);
+             slice[y * kMcNz + z] = getDensityAt(x, y, z);
         }
     }
+}
+
+void Mesher::calcDensityField(const ParticleSet &particles, const Grid &grid) {
+    scalarField_->clear();
+#ifdef HAVE_OMP
+#pragma omp parallel for
+#endif
+    for (int i = 0; i < ScalarField<float>::kSize; i++) {
+        int x = i / ((kMcNy+1) * (kMcNz+1));
+        int y = (i - x * ((kMcNy+1) * (kMcNz+1))) / (kMcNz+1);
+        int z = i - x * ((kMcNy+1) * (kMcNz+1)) - y * (kMcNz+1);
+        scalarField_->at(x, y, z) = calcDensityAt(particles, grid, x, y, z);
+    }
+}
+
+float Mesher::getDensityAt(int x, int y, int z) const {
+    return scalarField_->at(x, y, z);
 }
 
 float Mesher::calcDensityAt(const ParticleSet &particles, const Grid &grid, int x, int y, int z) const {
@@ -95,7 +113,7 @@ float Mesher::calcDensityAt(const ParticleSet &particles, const Grid &grid, int 
             for (int k = std::max(gridZ - 1, 0); k <= std::min(gridZ + 1, kNZ - 1); k++) {
                 auto gridIndex = i * kNY * kNZ + j * kNZ + k;
                 for (int particle = grid.starts[gridIndex];
-                     density < kMcThreshold & particle < grid.ends[gridIndex]; particle++) {
+                     density < kPolyThreshold & particle < grid.ends[gridIndex]; particle++) {
 
                     assert(particle < kNumParticles);
                     auto r = (particles.positions[particle] - point);

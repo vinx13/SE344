@@ -20,15 +20,21 @@ SphereMesh::SphereMesh(int nSlices, int nStacks, double radius, bool wireMode)
 
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_coords_);
+    glGenBuffers(1, &vbo_normals_);
     glGenBuffers(1, &ebo_);
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(vao_);
+
     glBindBuffer(GL_ARRAY_BUFFER, vbo_coords_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices_.size(), vertices_.data(), GL_STATIC_DRAW);
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_normals_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*normals_.size(), normals_.data(), GL_STREAM_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices_.size() * sizeof(short), vertexIndices_.data(), GL_STATIC_DRAW);
@@ -38,10 +44,11 @@ void SphereMesh::enableInstance() {
     bind();
     glGenBuffers(1, &offset_buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, offset_buffer_);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *) 0);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *) 0);
     glVertexAttribDivisor(0, 0);
-    glVertexAttribDivisor(1, 1);
+    glVertexAttribDivisor(1, 0);
+    glVertexAttribDivisor(2, 1);
     assert(glGetError() == 0);
 }
 

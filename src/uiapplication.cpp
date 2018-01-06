@@ -89,7 +89,7 @@ void UIApplication::init(const std::string &modelPath) {
     // object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
 
     auto drawable = loader_->load(modelPath);
-    drawable->setProgram(program_);
+    //drawable->setProgram(program_);
     object2_->setDrawable(drawable);
 
     pool_ = std::make_unique<Pool>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
@@ -135,11 +135,11 @@ void UIApplication::runLoop() {
 
         //object_->update(delta);
         glCullFace(GL_FRONT);
-        object2_->update(delta);
+        //object2_->update(delta);
         pool_->update(delta);
         //fps_->update(delta);
         //object_->render();
-        object2_->render();
+        //object2_->render();
         pool_->render();
 
         skybox_->render();
@@ -220,8 +220,8 @@ void UIApplication::scroll_callback(GLFWwindow *window, double xoffset, double y
 
 void UIApplication::mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        instance__.object_->bounce();
-        instance__.object2_->bounce();
+        // instance__.object_->bounce();
+        // instance__.object2_->bounce();
     }
 }
 

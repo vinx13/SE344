@@ -14,7 +14,7 @@
 #include "uiapplication.h"
 
 Renderer::Renderer() {
-    sphereMesh_ = std::make_unique<SphereMesh>(5, 5, 0.06);
+    sphereMesh_ = std::make_unique<SphereMesh>(5, 5, 0.15);
     sphereMesh_->enableInstance();
     mesher_ = std::make_unique<Mesher>();
     auto vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/particle.vert");
@@ -40,8 +40,9 @@ void Renderer::render(const ParticleSet &particles, const Grid &grid) {
     if (drawParticles_) {
         auto mvp = camera_->getProjectionMatrix() * camera_->getViewMatrix() * model_;
         particleProgram_->use();
+        particleProgram_->setMat4("model", model_);
         particleProgram_->setMat4("mvp", mvp);
-
+        particleProgram_->setVec3("cameraPos", camera_->getPosition());
         sphereMesh_->bind();
         sphereMesh_->renderInstanced(*particleProgram_, particles.positions.data(), kNumParticles);
     } else {

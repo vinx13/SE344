@@ -36,7 +36,7 @@ private:
 
     void generateWireVertexIndices();
 
-    GLuint vbo_coords_, vao_, ebo_;
+    GLuint vbo_coords_, vao_, ebo_, vbo_normals_;
     std::vector<float> vertices_, normals_;
     std::vector<short> vertexIndices_;
     std::vector<short> sliceIndices_;

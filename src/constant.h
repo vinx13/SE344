@@ -19,16 +19,16 @@ constexpr float kSmoothRadius3 = kSmoothRadius2 * kSmoothRadius;
 constexpr float kPoly6 =
     315.0 / 64.0 / pi / kSmoothRadius3 / kSmoothRadius3 / kSmoothRadius3;
 constexpr float kSpiky = -45.0 / pi / kSmoothRadius3 / kSmoothRadius3;
-constexpr float kViscosity = 0.1;
+constexpr float kViscosity = 0.25;
 constexpr float kParticleMass = 1.0;
 constexpr float kIdealGasCoeff = 1000.0;
 constexpr float kStandardDensity = 1.2;
-constexpr auto kGravity = glm::vec3(0.0, -150.f, 0.0);
+constexpr auto kGravity = glm::vec3(0.0, -100.f, 0.0);
 constexpr float kLaplacianViscosity = 45.0 * pi / kSmoothRadius3 / kSmoothRadius3;
 
-constexpr float kXMax = 18.0;
-constexpr float kYMax = 18.0;
-constexpr float kZMax = 18.0;
+constexpr float kXMax = 24.0;
+constexpr float kYMax = 24.0;
+constexpr float kZMax = 24.0;
 constexpr int kNX = static_cast<int>(kXMax / kSmoothRadius + 1);
 constexpr int kNY = static_cast<int>(kYMax / kSmoothRadius + 1);
 constexpr int kNZ = static_cast<int>(kYMax / kSmoothRadius + 1);
@@ -45,7 +45,6 @@ constexpr int kMcNy = static_cast<int>((kYMax + 2 * kMcMargin) / kMcStep + 1);
 constexpr int kMcNz = static_cast<int>((kZMax + 2 * kMcMargin) / kMcStep + 1);
 constexpr int kMcGridSize = kMcNx * kMcNy * kMcNz;
 
-constexpr float kMcThreshold = 2.5f * kParticleMass / kPoly6;
-constexpr float kMcPolyThreshold = kParticleMass * .6f / kPoly6;
+constexpr float kPolyThreshold = kParticleMass * .6f / kPoly6;
 
 #endif //SE344_CONSTANT_H
