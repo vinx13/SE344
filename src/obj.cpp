@@ -7,6 +7,7 @@
  */
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <iterator>
 
 #include "obj.h"
@@ -39,6 +40,14 @@ void ObjDrawable::init() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices_.size() * sizeof(unsigned short), vertexIndices_.data(),
                  GL_STATIC_DRAW);
 
+}
+
+const std::vector<glm::vec3> &ObjDrawable::getVertices() const {
+    return vertices_;
+}
+
+const std::vector<unsigned short> &ObjDrawable::getIndices() const {
+    return vertexIndices_;
 }
 
 std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {

@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "mesh.h"
 #include "program.h"
+#include "obj.h"
 
 glm::vec3 TriangleMesh::calcPlaneNormal(unsigned short i1, unsigned short i2, unsigned short i3) const {
     auto &p1 = vertices_[i1], &p2 = vertices_[i2], &p3 = vertices_[i3];
@@ -49,6 +50,30 @@ TriangleMesh::TriangleMesh(const std::vector<glm::vec3> &vertices, const std::ve
     glGenBuffers(1, &ebo_);
 
     assert(glGetError() == 0);
+}
+
+const std::vector<glm::vec3> &TriangleMesh::getVertices() const {
+    return vertices_;
+}
+
+const std::vector<unsigned short> &TriangleMesh::getIndices() const {
+    return indices_;
+}
+
+std::shared_ptr<TriangleMesh> TriangleMesh::fromDrawable(ObjDrawable *drawable) {
+    return std::make_shared<TriangleMesh>(drawable->getVertices(), drawable->getIndices());
+}
+
+void TriangleMesh::render(Program &program) {
+    bind();
+    program.use();
+    assert(glGetError() == 0);
+    glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT, nullptr);
+    assert(glGetError() == 0);
+}
+
+void TriangleMesh::bind() {
+    glBindVertexArray(vao_);
 }
 
 ParticleMesh::ParticleMesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices)

@@ -13,6 +13,7 @@ class Program;
 #include <glm/glm.hpp>
 #include <vector>
 #include <GL/gl3w.h>
+#include <memory>
 
 class Mesh {
 public:
@@ -21,13 +22,24 @@ public:
     virtual ~Mesh() = default;
 };
 
+class ObjDrawable;
 class TriangleMesh : public Mesh {
 public:
     TriangleMesh (const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices);
 
     glm::vec3 calcPlaneNormal(unsigned short i1, unsigned short i2, unsigned short i3) const;
+
     void calcNormals();
 
+    const std::vector<glm::vec3> &getVertices() const;
+
+    const std::vector<unsigned short> &getIndices() const;
+
+    static std::shared_ptr<TriangleMesh> fromDrawable(ObjDrawable *drawable);
+
+    void render(Program &program) override;
+
+    void bind() override;
 
 protected:
     GLuint vao_;

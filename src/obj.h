@@ -23,6 +23,10 @@ public:
 
     void render(const glm::mat4 &model) override;
 
+    const std::vector<glm::vec3> &getVertices() const;
+
+    const std::vector<unsigned short> &getIndices() const;
+
 protected:
     void init();
 
