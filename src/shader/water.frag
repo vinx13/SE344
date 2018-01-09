@@ -15,7 +15,7 @@ void main() {
 
     float cos_theta = abs(dot(I, normal));
     float cos_theta2 = cos_theta*cos_theta;// normal is normalized
-     vec4 color_reflect = texture(skybox, R_reflect);
+    vec4 color_reflect = texture(skybox, R_reflect);
     float ratio = 1.0 / 1.33;
     float r0 = 0.0204;
     float r = clamp(r0 +(1-r0)*cos_theta*cos_theta2*cos_theta2*cos_theta, 0.0, 1.0);
