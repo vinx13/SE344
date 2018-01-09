@@ -56,6 +56,8 @@ public:
 
     ~SphSim();
 
+    void setExternalForce(float externalForce);
+
     void update(double deltaTime);
 
     const ParticleSet &getParticles() const;
@@ -65,15 +67,14 @@ public:
 private:
     std::unique_ptr<ParticleSet> particles_;
     std::unique_ptr<Grid> grid_;
-    glm::vec3 axis_;
+    glm::vec3 axis_, right_;
+    float externalForce_;
 
 
-
-    GLuint offset_buffer;
 public:
     void setAxis(const glm::vec3 &axis);
 
-    const glm::vec3 &getAxis() const;
+    void setReverseRotation(const glm::mat3 &model);
 
 private:
     void updateGrid();
@@ -110,6 +111,8 @@ private:
         }
     }
 
+
+    glm::mat3 reverseRotation_;
 };
 
 #endif //SE344_SPH_H

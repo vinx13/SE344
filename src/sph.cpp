@@ -18,6 +18,8 @@ SphSim::SphSim(float width, float height, float depth) {
     grid_ = std::make_unique<Grid>();
     particles_ = std::make_unique<ParticleSet>();
 
+    setReverseRotation(glm::mat3(1.f));
+
     createParticles();
     updateGrid();
 }
@@ -100,7 +102,9 @@ void SphSim::updateAccelerations() {
     for (int i = 0; i < kNumParticles; i++) {
         float particleDensity = particles_->densities[i];
 
-        particles_->accelerations[i] += axis_ * kGravity[1]; //* gravDirection[0];
+        auto direction = reverseRotation_*glm::normalize(particles_->positions[i] - glm::vec3(10.f));
+        particles_->accelerations[i] += axis_ * (kGravity[1] + externalForce_) + direction * 0.5f*externalForce_;
+
         auto particlePosition = particles_->positions[i];
         float particleDensityRecip = kParticleMass / particleDensity;
 
@@ -134,6 +138,7 @@ void SphSim::updateAccelerations() {
         });
 
     }
+    externalForce_ *= 0.3;
 }
 
 void SphSim::updateParticles() {
@@ -192,6 +197,15 @@ void SphSim::setAxis(const glm::vec3 &axis) {
     SphSim::axis_ = axis;
 }
 
-const glm::vec3 &SphSim::getAxis() const {
-    return axis_;
+void SphSim::setReverseRotation(const glm::mat3 &model) {
+    reverseRotation_ = model;
+
+    setAxis(glm::normalize(reverseRotation_ * glm::vec3(0.f, 1.f, 0.f)));
+}
+
+// external force in right direction
+void SphSim::setExternalForce(float externalForce) {
+    externalForce = std::min(externalForce, 350.f);
+    std::cout << "External force " << externalForce << std::endl;
+    SphSim::externalForce_ = externalForce;
 }

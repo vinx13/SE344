@@ -90,7 +90,7 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
     renderer_ = std::make_unique<Renderer>();
     renderer_->setDrawParticles(false);
     renderer_->setCamera(UIApplication::getInstance().getCamera());
-    renderer_->setModel(glm::translate(glm::mat4(1.f), glm::vec3(-kXMax/2,-kYMax/2,-kZMax/2)));
+    renderer_->setModel(glm::translate(glm::mat4(1.f), glm::vec3(-kXMax / 2, -kYMax / 2, -kZMax / 2)));
 }
 
 void Pool::render() {
@@ -110,17 +110,58 @@ void Pool::toggleDrawParticle() {
 }
 
 void Pool::rotateIfHit(float x, float y, float xoffset, float yoffset) {
-    //auto offset = glm::vec3(kXMax / 2, kYMax / 2, kZMax / 2);
-    //auto t = glm::translate(renderer_->getModel(), -offset);
-    auto r = glm::rotate(glm::mat4(1.f), 0.01f * xoffset, glm::vec3(0.f,1.f,0.f));
-    r = glm::rotate(r, 0.01f*yoffset, glm::vec3(-1.f,0.f,0.f));
-    auto model = r*renderer_->getModel();
+    auto r = glm::rotate(glm::mat4(1.f), 0.01f * xoffset, glm::vec3(0.f, 1.f, 0.f));
+    r = glm::rotate(r, 0.01f * yoffset, glm::vec3(-1.f, 0.f, 0.f));
+    auto model = r * renderer_->getModel();
     renderer_->setModel(model);
 
     auto raxis = glm::mat3(glm::inverse(r));
     auto id = raxis * glm::mat3(r);
-    //std::cout << raxis *glm::mat3(r) << std::endl;
-    //axis_ = glm::normalize(raxis * axis_);
-    axis_ = glm::normalize(glm::mat3(glm::inverse(model))*glm::vec3(0.f,1.f,0.f));
-    sim->setAxis(axis_);
+    sim->setReverseRotation(glm::mat3(glm::inverse(model)));
+}
+
+void Pool::setBoundaryModel(const TriangleMesh &mesh, float scale, const glm::vec3 &delta) {
+    const auto &vertices = mesh.getVertices();
+    const auto &indices = mesh.getIndices();
+
+    for (int i = 0; i < indices.size() / 3; i += 3) {
+        auto p1 = vertices[indices[i]], p2 = vertices[indices[i + 1]], p3 = vertices[indices[i + 2]];
+        p1 = scale * (p1 + delta);
+        p2 = scale * (p2 + delta);
+        p3 = scale * (p3 + delta);
+        std::array<bool, kGridSize> boundary;
+        scanLine(boundary, p1, p2);
+        scanLine(boundary, p1, p3);
+        scanLine(boundary, p2, p3);
+    }
+}
+
+void Pool::scanLine(std::array<bool, kGridSize> &boundary, const glm::vec3 &p1, const glm::vec3 &p2) {
+    const auto stepLength = glm::length(glm::vec3(kSmoothRadius));
+
+    auto diff = p1 - p2;
+    auto dist = glm::length(diff);
+    if (dist == 0.0) return;
+    auto dir = diff / dist;
+
+    int numSteps = dist / stepLength;
+
+    auto p = p1;
+    for (int i = 0; i < numSteps; i++) {
+        addBoundaryPoint(boundary, p);
+        p += glm::vec3(kSmoothRadius);
+    }
+    addBoundaryPoint(boundary, p2);
+}
+
+void Pool::addBoundaryPoint(std::array<bool, kGridSize> &boundary, const glm::vec3 &p) {
+    int x = p.x / kSmoothRadius, y = p.y / kSmoothRadius, z = p.z / kSmoothRadius;
+    if (x < 0 || x >= kNX || y < 0 || y >= kNY || z < 0 || z >= kNZ) {
+        return;
+    }
+    boundary[x * (kNY * kNZ) + y * (kNZ) + z] = true;
+}
+
+void Pool::onAudioInput(float left, float right) {
+    sim->setExternalForce(1000000.0*right);
 }

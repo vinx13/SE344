@@ -46,10 +46,18 @@ public:
 
     void rotateIfHit(float x, float y, float xoffset, float yoffset);
 
+    void setBoundaryModel(const TriangleMesh &mesh, float scale = 1.f, const glm::vec3 &delta = glm::vec3(0.f));
+
+    void onAudioInput(float left, float right);
+
 private:
     std::vector<std::shared_ptr<Particle>> particles_;
     glm::vec3 axis_;
    // std::unique_ptr<SphSim> sph_;
+    void scanLine(std::array<bool, kGridSize> &boundary, const glm::vec3 &p1, const glm::vec3 &p2);
+
+    void addBoundaryPoint(std::array<bool, kGridSize> &boundary, const glm::vec3 &p);
+
 };
 
 #endif //SE344_POOL_H

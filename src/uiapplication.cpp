@@ -53,8 +53,9 @@ void UIApplication::init(const std::string &modelPath) {
         std::cerr << "OpenGL " << kOpenGLVersionMajor << '.' << kOpenGLVersionMinor << " not supported" << std::endl;
         exit(-1);
     }
-#if AUDIO_ENABLED
-        initSoundIo();
+#define AUDIO_ENABLED 1
+#ifdef AUDIO_ENABLED
+    initSoundIo();
 #endif
 
     glEnable(GL_DEPTH_TEST);
@@ -89,12 +90,14 @@ void UIApplication::init(const std::string &modelPath) {
     // object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
 
     auto drawable = loader_->load(modelPath);
+    auto mesh = TriangleMesh::fromDrawable(static_cast<ObjDrawable*>(drawable.get()));
     //drawable->setProgram(program_);
-    object2_->setDrawable(drawable);
+    // object2_->setDrawable(drawable);
 
     pool_ = std::make_unique<Pool>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
     drawable = std::make_shared<ContainerDrawable>(program_);
     pool_->setDrawable(drawable);
+    pool_->setBoundaryModel(*mesh);
 
     skybox_ = std::make_unique<Skybox>("resource/desert/desert_ft.tga",
                                        "resource/desert/desert_bk.tga",
@@ -194,7 +197,9 @@ void UIApplication::mouse_callback(GLFWwindow *window, double xpos, double ypos)
     static float lastY = 600 / 2.0f;
     static bool firstMouse = true;
 
-    if (xpos > UIApplication::getInstance().getScreenWidth() || ypos > UIApplication::getInstance().getScreenHeight()) return;
+    if (xpos > UIApplication::getInstance().getScreenWidth() ||
+        ypos > UIApplication::getInstance().getScreenHeight())
+        return;
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
@@ -404,8 +409,7 @@ void UIApplication::processAudio() {
         if (threshold < 0) {
             threshold = ave;
         } else if (ave > 10 * threshold) {
-            object_->bounce();
-            object2_->bounce();
+            UIApplication::onAudioInput(ave, ave);
         } else {
             threshold = (threshold + ave) / 2.f;
         }
@@ -440,4 +444,8 @@ const unsigned int UIApplication::getScreenHeight() const {
 
 void UIApplication::onMouseDraging(float x, float y, float xoffset, float yoffset) {
     pool_->rotateIfHit(x, y, xoffset, yoffset);
+}
+
+void UIApplication::onAudioInput(float left, float right) {
+    pool_->onAudioInput(left, right);
 }

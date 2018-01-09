@@ -25,13 +25,13 @@ class UIApplication {
 public:
     static UIApplication &getInstance();
 
-    static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    static void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+    static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
-    static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
-    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
 
     void init(const std::string &modelPath);
 
@@ -40,6 +40,7 @@ public:
     void terminate();
 
     glm::mat4 getViewMatrix() const;
+
     glm::mat4 getProjectionMatrix() const;
 
     const std::shared_ptr<Camera> &getCamera() const;
@@ -49,6 +50,12 @@ public:
     const unsigned int getScreenHeight() const;
 
     void onMouseDraging(float x, float y, float xoffset, float yoffset);
+
+    enum Channel {
+        kLeft, kRight
+    };
+
+    void onAudioInput(float left, float right);
 
 private:
     static UIApplication instance__;
@@ -85,6 +92,7 @@ private:
     } rc;
 
     static void read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max);
+
     static void overflow_callback(struct SoundIoInStream *instream);
 
     void processAudio();
