@@ -35,21 +35,31 @@ public:
 
     bool isDrawParticles() const;
 
-private:
-    std::shared_ptr<SphereMesh> sphereMesh_;
-    std::shared_ptr<Camera> camera_;
-public:
     void setCamera(const std::shared_ptr<Camera> &camera);
+
+    void setCustomerMesh(std::shared_ptr<TriangleMesh> &mesh);
+
+    void setDrawCustomMesh(bool drawCustomMesh);
+
+    void setModel(const glm::mat4 &model_);
+
+    const glm::mat4 &getModel() const;
+
+    bool isDrawCustomMesh() const;
+
 
 private:
     std::shared_ptr<Program> particleProgram_, waterProgram_;
     std::unique_ptr<Mesher> mesher_;
     bool drawParticles_;
+    bool drawCustomMesh_;
     glm::mat4 model_;
-public:
-    void setModel(const glm::mat4 &model_);
 
-    const glm::mat4 &getModel() const;
+    std::shared_ptr<TriangleMesh> customObjMesh_;
+
+    std::shared_ptr<SphereMesh> sphereMesh_;
+
+    std::shared_ptr<Camera> camera_;
 };
 
 

@@ -85,19 +85,13 @@ void UIApplication::init(const std::string &modelPath) {
 
     this->loader_ = std::make_unique<ObjLoader>();
 
-    //auto sphere = std::make_shared<Sphere>(program_, false);
-
-    // object_->setDrawable(std::static_pointer_cast<Drawable>(sphere));
-
     auto drawable = loader_->load(modelPath);
     auto mesh = TriangleMesh::fromDrawable(static_cast<ObjDrawable*>(drawable.get()));
-    //drawable->setProgram(program_);
-    // object2_->setDrawable(drawable);
 
     pool_ = std::make_unique<Pool>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
     drawable = std::make_shared<ContainerDrawable>(program_);
     pool_->setDrawable(drawable);
-    pool_->setBoundaryModel(*mesh);
+    pool_->setBoundaryModel(*mesh, 100.0, glm::vec3(10.f));
 
     skybox_ = std::make_unique<Skybox>("resource/desert/desert_ft.tga",
                                        "resource/desert/desert_bk.tga",
@@ -105,15 +99,7 @@ void UIApplication::init(const std::string &modelPath) {
                                        "resource/desert/desert_dn.tga",
                                        "resource/desert/desert_rt.tga",
                                        "resource/desert/desert_lf.tga");
-    //fps_ = std::make_unique<FpsCounter>();
-//    skybox_ = std::make_unique<Skybox>( "desert/desert_lf.tga","desert/desert_rt.tga",
-//                                       "desert/desert_up.tga", "desert/desert_dn.tga", "desert/desert_ft.tga", "desert/desert_bk.tga");
-//    // position = glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = -90.f, float pitch = 0
-//    this->camera_ = std::make_unique<Camera>(-20.f, 20.f, 5.f,
-//                                             0.f, 1.f, 0.f,
-//                                             -45.f, -45.f);
-
-    //glEnable(GL_POINT_SMOOTH);
+    // fps_ = std::make_unique<FpsCounter>();
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_DEPTH_TEST);
 }
@@ -134,15 +120,11 @@ void UIApplication::runLoop() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         program_->use();
-        //program_->setMat4("view", camera_->getViewMatrix());
 
-        //object_->update(delta);
         glCullFace(GL_FRONT);
-        //object2_->update(delta);
         pool_->update(delta);
         //fps_->update(delta);
-        //object_->render();
-        //object2_->render();
+
         pool_->render();
 
         skybox_->render();
@@ -156,6 +138,8 @@ void UIApplication::runLoop() {
 
 void UIApplication::processInput() {
     auto delta = currentTime_ - lastTime_;
+
+    static bool tabDisabled = false;
 
     if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window_, true);
@@ -173,8 +157,11 @@ void UIApplication::processInput() {
         camera_->onKeyboard(Camera::Backward, delta);
     } else if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS) {
 
-    } else if (glfwGetKey(window_, GLFW_KEY_TAB) == GLFW_PRESS) {
-        pool_->toggleDrawParticle();
+    } else if (!tabDisabled &&glfwGetKey(window_, GLFW_KEY_TAB) == GLFW_PRESS) {
+        pool_->toggleDrawMode();
+        tabDisabled = true;
+    } else if (glfwGetKey(window_, GLFW_KEY_TAB) == GLFW_RELEASE) {
+        tabDisabled = false;
     }
 }
 

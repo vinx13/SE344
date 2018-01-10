@@ -206,6 +206,5 @@ void SphSim::setReverseRotation(const glm::mat3 &model) {
 // external force in right direction
 void SphSim::setExternalForce(float externalForce) {
     externalForce = std::min(externalForce, 350.f);
-    std::cout << "External force " << externalForce << std::endl;
     SphSim::externalForce_ = externalForce;
 }

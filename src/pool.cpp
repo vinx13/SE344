@@ -95,18 +95,23 @@ Pool::Pool(const glm::mat4 &model) : UIObject(model) {
 
 void Pool::render() {
     renderer_->render(sim->getParticles(), sim->getGrid());
-//    auto ax = sim->getAxis();
-//    ax = glm::normalize(glm::mat3(model_)*ax);
-//    std::cout << ax.x << ' ' << ax.y << ' ' << ax.z << std::endl;
-//    axisRenderer_.render(sim->getAxis(), renderer_->getModel());
 }
 
 void Pool::update(double deltaTime) {
     sim->update(deltaTime);
 }
 
-void Pool::toggleDrawParticle() {
-    renderer_->setDrawParticles(!renderer_->isDrawParticles());
+void Pool::toggleDrawMode() {
+    if (renderer_->isDrawParticles()) {
+        if (renderer_->isDrawCustomMesh()) {
+            renderer_->setDrawParticles(false);
+        } else {
+            renderer_->setDrawCustomMesh(true);
+        }
+    } else {
+        renderer_->setDrawParticles(true);
+        renderer_->setDrawCustomMesh(false);
+    }
 }
 
 void Pool::rotateIfHit(float x, float y, float xoffset, float yoffset) {
@@ -163,5 +168,5 @@ void Pool::addBoundaryPoint(std::array<bool, kGridSize> &boundary, const glm::ve
 }
 
 void Pool::onAudioInput(float left, float right) {
-    sim->setExternalForce(1000000.0*right);
+    sim->setExternalForce(1000000.0 * right);
 }

@@ -12,7 +12,7 @@
 #include <glm/glm.hpp>
 
 constexpr double pi = 3.14159265358979323836;
-constexpr int kNumParticles = 10000;
+constexpr int kNumParticles = 7000;
 constexpr float kSmoothRadius = 1.5;
 constexpr float kSmoothRadius2 = kSmoothRadius * kSmoothRadius;
 constexpr float kSmoothRadius3 = kSmoothRadius2 * kSmoothRadius;

@@ -12,10 +12,17 @@
 #include "sph.h"
 #include "mesher.h"
 #include "uiapplication.h"
+#include "obj.h"
 
 Renderer::Renderer() {
     sphereMesh_ = std::make_unique<SphereMesh>(5, 5, 0.15);
+
+    auto loader_ = std::make_unique<ObjLoader>();
+    auto drawable = loader_->load("bunny.obj");
+    customObjMesh_ = TriangleMesh::fromDrawable(static_cast<ObjDrawable *>(drawable.get()));
+    customObjMesh_->enableInstance();
     sphereMesh_->enableInstance();
+
     mesher_ = std::make_unique<Mesher>();
     auto vert = std::make_shared<Shader>(GL_VERTEX_SHADER, "shader/particle.vert");
     auto frag = std::make_shared<Shader>(GL_FRAGMENT_SHADER, "shader/particle.frag");
@@ -43,8 +50,13 @@ void Renderer::render(const ParticleSet &particles, const Grid &grid) {
         particleProgram_->setMat4("model", model_);
         particleProgram_->setMat4("mvp", mvp);
         particleProgram_->setVec3("cameraPos", camera_->getPosition());
-        sphereMesh_->bind();
-        sphereMesh_->renderInstanced(*particleProgram_, particles.positions.data(), kNumParticles);
+        if (isDrawCustomMesh()) {
+            customObjMesh_->bind();
+            customObjMesh_->renderInstanced(*particleProgram_, particles.positions.data(), kNumParticles);
+        } else {
+            sphereMesh_->bind();
+            sphereMesh_->renderInstanced(*particleProgram_, particles.positions.data(), kNumParticles);
+        }
     } else {
         waterProgram_->use();
         waterProgram_->setVec3("cameraPos", camera_->getPosition());
@@ -83,4 +95,14 @@ const glm::mat4 &Renderer::getModel() const {
     return model_;
 }
 
+void Renderer::setDrawCustomMesh(bool drawCustomMesh) {
+    drawCustomMesh_ = drawCustomMesh;
+}
 
+void Renderer::setCustomerMesh(std::shared_ptr<TriangleMesh> &mesh) {
+    customObjMesh_ = mesh;
+}
+
+bool Renderer::isDrawCustomMesh() const {
+    return drawCustomMesh_;
+}

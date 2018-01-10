@@ -20,7 +20,7 @@ static void error_callback(int error, const char* description) {
 int main(int argc, char **argv) {
     glfwInit();
 
-    std::string modelPath = argc == 2 ? argv[1] : "1.obj";
+    std::string modelPath = argc == 2 ? argv[1] : "bunny.obj";
 
     glfwSetErrorCallback(error_callback);
 

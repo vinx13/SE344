@@ -42,7 +42,7 @@ public:
     const std::vector<std::shared_ptr<Particle>> &getParticles() const;
     SphSim *sim;
 
-    void toggleDrawParticle();
+    void toggleDrawMode();
 
     void rotateIfHit(float x, float y, float xoffset, float yoffset);
 
