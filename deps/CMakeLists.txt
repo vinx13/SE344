@@ -7,6 +7,9 @@ add_subdirectory(gl3w)
 
 add_subdirectory(glm)
 
+
+set(BUILD_STATIC_LIBS FALSE)
+set(BUILD_EXAMPLE_PROGRAMS FALSE)
 set(BUILD_TESTS FALSE)
 add_subdirectory(libsoundio)
 
