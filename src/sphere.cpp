@@ -10,8 +10,9 @@
 #include <utility>
 #include <vector>
 #include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
 #include "sphere.h"
+#include "constant.h"
 
 SphereMesh::SphereMesh(int nSlices, int nStacks, double radius, bool wireMode)
     : nSlices_(nSlices), nStacks_(nStacks), radius_(radius), wireMode_(wireMode) {
@@ -153,7 +154,7 @@ void SphereMesh::generateSphere() {
 
     nVert_ = nSlices_ * (nStacks_ - 1) + 2;
 
-    float theta = 2 * M_PI / -nSlices_, phi = M_PI / -nStacks_;
+    float theta = 2 * kPi / -nSlices_, phi = kPi / -nStacks_;
 
     /* Allocate vertex and normal buffers, bail out if memory allocation fails */
     vertices_.resize(nVert_ * 3);

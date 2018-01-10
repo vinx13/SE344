@@ -10,7 +10,6 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include <sys/termios.h>
 #include "drawable.h"
 #include "speed.h"
 #include "mesh.h"

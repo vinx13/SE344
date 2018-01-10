@@ -11,20 +11,20 @@
 #include <cmath>
 #include <glm/glm.hpp>
 
-constexpr double pi = 3.14159265358979323836;
+constexpr double kPi = 3.14159265358979323836;
 constexpr int kNumParticles = 7000;
 constexpr float kSmoothRadius = 1.5;
 constexpr float kSmoothRadius2 = kSmoothRadius * kSmoothRadius;
 constexpr float kSmoothRadius3 = kSmoothRadius2 * kSmoothRadius;
 constexpr float kPoly6 =
-    315.0 / 64.0 / pi / kSmoothRadius3 / kSmoothRadius3 / kSmoothRadius3;
-constexpr float kSpiky = -45.0 / pi / kSmoothRadius3 / kSmoothRadius3;
+    315.0 / 64.0 / kPi / kSmoothRadius3 / kSmoothRadius3 / kSmoothRadius3;
+constexpr float kSpiky = -45.0 / kPi / kSmoothRadius3 / kSmoothRadius3;
 constexpr float kViscosity = 0.25;
 constexpr float kParticleMass = 1.0;
 constexpr float kIdealGasCoeff = 1000.0;
 constexpr float kStandardDensity = 1.2;
 constexpr auto kGravity = glm::vec3(0.0, -100.f, 0.0);
-constexpr float kLaplacianViscosity = 45.0 * pi / kSmoothRadius3 / kSmoothRadius3;
+constexpr float kLaplacianViscosity = 45.0 * kPi / kSmoothRadius3 / kSmoothRadius3;
 
 constexpr float kXMax = 24.0;
 constexpr float kYMax = 24.0;
