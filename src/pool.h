@@ -50,6 +50,7 @@ public:
 
     void onAudioInput(float left, float right);
 
+    void setCustomMesh(const std::shared_ptr<TriangleMesh> &mesh);
 private:
     std::vector<std::shared_ptr<Particle>> particles_;
     glm::vec3 axis_;

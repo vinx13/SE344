@@ -37,7 +37,7 @@ public:
 
     void setCamera(const std::shared_ptr<Camera> &camera);
 
-    void setCustomerMesh(std::shared_ptr<TriangleMesh> &mesh);
+    void setCustomMesh(const std::shared_ptr<TriangleMesh> &mesh);
 
     void setDrawCustomMesh(bool drawCustomMesh);
 

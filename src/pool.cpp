@@ -170,3 +170,8 @@ void Pool::addBoundaryPoint(std::array<bool, kGridSize> &boundary, const glm::ve
 void Pool::onAudioInput(float left, float right) {
     sim->setExternalForce(1000000.0 * right);
 }
+
+void Pool::setCustomMesh(const std::shared_ptr<TriangleMesh> &mesh) {
+    renderer_->setCustomMesh(mesh);
+}
+

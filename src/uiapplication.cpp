@@ -87,6 +87,8 @@ void UIApplication::init(const std::string &modelPath) {
 
     auto drawable = loader_->load(modelPath);
     auto mesh = TriangleMesh::fromDrawable(static_cast<ObjDrawable*>(drawable.get()));
+    mesh->enableInstance();
+    //pool_->setCustomMesh(mesh);
 
     pool_ = std::make_unique<Pool>(glm::scale(glm::mat4(1.f), glm::vec3(5.f)));
     drawable = std::make_shared<ContainerDrawable>(program_);

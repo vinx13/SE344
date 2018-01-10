@@ -99,7 +99,7 @@ void Renderer::setDrawCustomMesh(bool drawCustomMesh) {
     drawCustomMesh_ = drawCustomMesh;
 }
 
-void Renderer::setCustomerMesh(std::shared_ptr<TriangleMesh> &mesh) {
+void Renderer::setCustomMesh(const std::shared_ptr<TriangleMesh> &mesh) {
     customObjMesh_ = mesh;
 }
 
