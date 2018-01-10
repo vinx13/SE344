@@ -1,6 +1,6 @@
 #version 330 core
 layout (triangles) in;
-layout (line_strip, max_vertices = 8) out;
+layout (line_strip, max_vertices = 14) out;
 
 in VS_OUT {
     vec3 normal;
@@ -27,6 +27,29 @@ void main()
     GenerateLine(1); // 第二个顶点法线
     GenerateLine(2); // 第三个顶点法线
 
+    gl_Position = gl_in[0].gl_Position;
+    vertex_color = vec4(0,1,0,1);
+    EmitVertex();
+    gl_Position = gl_in[1].gl_Position;
+    vertex_color = vec4(0,1,0,1);
+    EmitVertex();
+    EndPrimitive();
+
+        gl_Position = gl_in[0].gl_Position;
+        vertex_color = vec4(0,1,0,1);
+        EmitVertex();
+        gl_Position = gl_in[2].gl_Position;
+        vertex_color = vec4(0,1,0,1);
+        EmitVertex();
+        EndPrimitive();
+
+            gl_Position = gl_in[2].gl_Position;
+            vertex_color = vec4(0,1,0,1);
+            EmitVertex();
+            gl_Position = gl_in[1].gl_Position;
+            vertex_color = vec4(0,1,0,1);
+            EmitVertex();
+            EndPrimitive();
 
     vec3 P0 = gl_in[0].gl_Position.xyz;
     vec3 P1 = gl_in[1].gl_Position.xyz;

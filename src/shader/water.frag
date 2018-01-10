@@ -22,7 +22,17 @@ void main() {
 
     vec3 R_refract = refract(I, normal, ratio);
     vec4 color_refract = texture(skybox, R_refract);
+
+
+    vec3 viewDir = normalize(cameraPos - position);
+    float spec = 0.0;
+    vec3 lightPos = vec3(0, 30, -40);
+    vec3 lightDir = normalize(lightPos - position);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+
     FragColor = texture(skybox, I);
     FragColor = mix(color_reflect, color_refract,r);
+    FragColor *= (1+spec);
 
 }
