@@ -18,7 +18,7 @@ Renderer::Renderer() {
     sphereMesh_ = std::make_unique<SphereMesh>(5, 5, 0.15);
 
     auto loader_ = std::make_unique<ObjLoader>();
-    auto drawable = loader_->load("bunny.obj");
+    auto drawable = loader_->load("resource/bunny.obj");
     customObjMesh_ = TriangleMesh::fromDrawable(static_cast<ObjDrawable *>(drawable.get()));
     customObjMesh_->enableInstance();
     sphereMesh_->enableInstance();

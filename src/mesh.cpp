@@ -6,9 +6,11 @@
  *
  */
 #include <algorithm>
+#include <array>
 #include "mesh.h"
 #include "program.h"
 #include "obj.h"
+#include "constant.h"
 
 glm::vec3 TriangleMesh::calcPlaneNormal(unsigned short i1, unsigned short i2, unsigned short i3) const {
     auto &p1 = vertices_[i1], &p2 = vertices_[i2], &p3 = vertices_[i3];
@@ -124,9 +126,13 @@ void TriangleMesh::renderInstanced(Program &program, const glm::vec3 *offsets, i
 
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, offset_buffer_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * n, offsets, GL_STREAM_DRAW);
 
-    glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT, 0, n);
+    std::array<glm::vec3, kNumParticles/3> offsets_;
+    for (int i = 0; i < n; i+= 3) {
+        offsets_[i/3]=offsets[i];
+    }
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * n/3, offsets_.data(), GL_STREAM_DRAW);
+    glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT, 0, n/3);
 
     assert(glGetError() == 0);
 }
