@@ -27,6 +27,8 @@ public:
 
     const std::vector<unsigned short> &getIndices() const;
 
+    const std::vector<glm::vec3> &getNormals() const;
+
 protected:
     void init();
 

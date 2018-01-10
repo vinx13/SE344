@@ -50,6 +50,10 @@ const std::vector<unsigned short> &ObjDrawable::getIndices() const {
     return vertexIndices_;
 }
 
+const std::vector<glm::vec3> &ObjDrawable::getNormals() const {
+    return normals_;
+}
+
 std::shared_ptr<Drawable> ObjLoader::load(const std::string &path) {
     auto drawable = std::make_shared<ObjDrawable>();
     std::ifstream src(path);

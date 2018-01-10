@@ -26,6 +26,7 @@ class ObjDrawable;
 class TriangleMesh : public Mesh {
 public:
     TriangleMesh (const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices);
+    TriangleMesh (const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices, const std::vector<glm::vec3> &normals);
 
     glm::vec3 calcPlaneNormal(unsigned short i1, unsigned short i2, unsigned short i3) const;
 
@@ -41,6 +42,9 @@ public:
 
     void bind() override;
 
+    void enableInstance();
+
+    void renderInstanced(Program &program, const glm::vec3 *offsets, int n);
 protected:
     GLuint vao_;
     GLuint vbo_coord_, vbo_normal_;
@@ -48,6 +52,12 @@ protected:
     std::vector<glm::vec3> vertices_;
     std::vector<unsigned short> indices_;
     std::vector<glm::vec3> normals_;
+
+    GLuint offset_buffer_;
+
+    void generateBuffers();
+
+    void bufferData();
 };
 
 class ParticleMesh : public TriangleMesh {

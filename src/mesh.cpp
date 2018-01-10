@@ -41,15 +41,45 @@ void TriangleMesh::calcNormals() {
 }
 
 TriangleMesh::TriangleMesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices)
-    : vertices_(vertices)
-    , indices_(indices) {
+    : vertices_(vertices), indices_(indices) {
+    generateBuffers();
+
+    bufferData();
+
+    assert(glGetError() == 0);
+}
+
+
+TriangleMesh::TriangleMesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices,
+                           const std::vector<glm::vec3> &normals) : vertices_(vertices), indices_(indices),
+                                                                    normals_(normals) {
+    generateBuffers();
+    bufferData();
+    assert(glGetError() == 0);
+}
+
+void TriangleMesh::bufferData() {
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_coord_);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices_.size(), vertices_.data(), GL_STREAM_DRAW);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_normal_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals_.size(), normals_.data(), GL_STREAM_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices_.size(), indices_.data(), GL_STREAM_DRAW);
+}
+
+void TriangleMesh::generateBuffers() {
     glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);
     glGenBuffers(1, &vbo_coord_);
     glGenBuffers(1, &vbo_normal_);
     glGenBuffers(1, &ebo_);
-
-    assert(glGetError() == 0);
 }
 
 const std::vector<glm::vec3> &TriangleMesh::getVertices() const {
@@ -61,7 +91,7 @@ const std::vector<unsigned short> &TriangleMesh::getIndices() const {
 }
 
 std::shared_ptr<TriangleMesh> TriangleMesh::fromDrawable(ObjDrawable *drawable) {
-    return std::make_shared<TriangleMesh>(drawable->getVertices(), drawable->getIndices());
+    return std::make_shared<TriangleMesh>(drawable->getVertices(), drawable->getIndices(), drawable->getNormals());
 }
 
 void TriangleMesh::render(Program &program) {
@@ -76,24 +106,36 @@ void TriangleMesh::bind() {
     glBindVertexArray(vao_);
 }
 
+void TriangleMesh::enableInstance() {
+    bind();
+    glGenBuffers(1, &offset_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, offset_buffer_);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *) 0);
+    glVertexAttribDivisor(0, 0);
+    glVertexAttribDivisor(1, 0);
+    glVertexAttribDivisor(2, 1);
+    assert(glGetError() == 0);
+}
+
+void TriangleMesh::renderInstanced(Program &program, const glm::vec3 *offsets, int n) {
+    assert(glGetError() == 0);
+    program.use();
+
+    bind();
+    glBindBuffer(GL_ARRAY_BUFFER, offset_buffer_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * n, offsets, GL_STREAM_DRAW);
+
+    glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT, 0, n);
+
+    assert(glGetError() == 0);
+}
+
 ParticleMesh::ParticleMesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned short> &indices)
     : TriangleMesh(vertices, indices) {
 
     calcNormals();
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_coord_);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
-    glEnableVertexAttribArray(0);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices_.size(), vertices_.data(), GL_STREAM_DRAW);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_normal_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals_.size(), normals_.data(), GL_STREAM_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * indices.size(), indices.data(), GL_STREAM_DRAW);
+    bufferData();
 
     assert(glGetError() == 0);
 }
