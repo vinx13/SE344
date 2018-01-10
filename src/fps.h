@@ -22,7 +22,9 @@ public:
     void update(double deltaTime);
 
 private:
+#ifdef USE_FREETYPE
     std::unique_ptr<TextRenderer> renderer_;
+#endif
     std::string string_;
     const glm::ivec2 position_;
 };

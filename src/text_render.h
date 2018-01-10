@@ -12,8 +12,11 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <map>
-#include <ft2build.h>
+
 #include <memory>
+
+#ifdef USE_FREETYPE
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "program.h"
@@ -48,5 +51,6 @@ public:
     std::shared_ptr<FontManager> fontManager_;
 };
 
+#endif
 
 #endif //SE344_TEXT_RENDER_H

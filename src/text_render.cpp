@@ -9,6 +9,7 @@
 #include "program.h"
 #include "uiapplication.h"
 
+#ifdef USE_FREETYPE
 
 FontManager::FontManager(const std::string &font, int width, int height) {
     // FreeType
@@ -140,3 +141,5 @@ void TextRenderer::render(const std::string &text, float x, float y, float scale
     glBindTexture(GL_TEXTURE_2D, 0);
     assert(glGetError() == 0);
 }
+
+#endif
